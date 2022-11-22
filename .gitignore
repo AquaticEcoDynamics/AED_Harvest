@@ -1,3 +1,6 @@
 data
 security
 security/*
+utils
+*-bak
+.*.swp
