@@ -36,74 +36,68 @@ while `true` ; do
   NOW=`date +%Y%m%d%H%M`
 
   if [ $NOW -ge $BOM_NEXT ] ; then
-    cd harvest_bom
     # echo run BOM.sh
-    ./BOM.sh "barrack"
+    ./harvest_bom/BOM.sh "barrack"
     sleep 1
-    ./BOM.sh "meadow"
+    ./harvest_bom/BOM.sh "meadow"
     sleep 1
-    ./BOM.sh "kent"
-    cd ..
+    ./harvest_bom/BOM.sh "kent"
 
     BOM_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $BOM_WAIT"`
 #   echo next BOM at $BOM_NEXT
   fi
 
   if [ $NOW -ge $BOMT_NEXT ] ; then
-    cd harvest_bom_tide
-    ./BOM_tide.sh
-    cd ..
+    ./harvest_bom_tide/BOM_tide.sh
     BOMT_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $BOMT_WAIT"`
 #   echo next BOMT at $BOMT_NEXT
   fi
 
   if [ $NOW -ge $DOT_NEXT ] ; then
-    cd harvest_dot
     # echo run DOT.sh
-    ./DOT.sh "fremantle"
-    ./DOT.sh "barrack"
-    ./DOT.sh "peel"
-    ./DOT.sh "mandurah"
-    ./DOT.sh "mozzie"
-    cd ..
+    ./harvest_dot/DOT.sh "fremantle"
+    ./harvest_dot/DOT.sh "barrack"
+    ./harvest_dot/DOT.sh "peel"
+    ./harvest_dot/DOT.sh "mandurah"
+    ./harvest_dot/DOT.sh "mozzie"
     DOT_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $DOT_WAIT"`
 #   echo next DOT at $DOT_NEXT
   fi
 
   if [ $NOW -ge $WIR_NEXT ] ; then
-    cd harvest_wir
-    ./WIR.sh
-    cd ..
+    ./harvest_wir/WIR.sh
     WIR_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $WIR_WAIT"`
 #   echo next WIR at $WIR_NEXT
   fi
 
   if [ $NOW -ge $NEONNEXT ] ; then
-    cd harvest_neon
-    ./NEON.sh
-    cd ..
+    ./harvest_neon/NEON.sh
     NEONNEXT=`date +%Y%m%d%H%M --date="$TODAY + $NEONWAIT"`
 #   echo next NEON at $NEONNEXT
   fi
 
   if [ $NOW -ge $MATINEXT ] ; then
-    cd harvest_matilda
-    ./MATILDA.sh
-    cd ..
+    ./harvest_matilda/MATILDA.sh
     MATINEXT=`date +%Y%m%d%H%M --date="$TODAY + $MATIWAIT"`
 #   echo next MATI at $MATINEXT
   fi
 
   if [ $NOW -ge $DPIRDNEXT ] ; then
-    cd harvest_dpird
-    ./DPIRD.sh
-    cd ..
+    ./harvest_dpird/DPIRD.sh
     DPIRDNEXT=`date +%Y%m%d%H%M --date="$TODAY + $DPIRDWAIT"`
 #   echo next DPIRD at $DPIRDNEXT
+
+    DPIRDNEXT=0
+    DPIRDWAIT=1day
+
   fi
 
-DPIRDNEXT=0
-DPIRDWAIT=1day
+  if [ $NOW -ge $LWN_NEXT ] ; then
+    ./harvest_lwn/LWN.sh
+    LWN_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $LWN_WAIT"`
+#   echo next LWN at $LWN_NEXT
+  fi
+
   # sleep for a random time between 1 and 3 mins
   sleep $((60 + $RANDOM % 120))
 done

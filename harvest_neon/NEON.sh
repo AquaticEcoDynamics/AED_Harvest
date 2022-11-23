@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ../security/neon.x
+. ./security/neon.x
 
 NEON_SERVER="https://restservice-neon.unidata.com.au:443/NeonRESTService.svc"
 

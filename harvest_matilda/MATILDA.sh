@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ../security/matilda.x
+. ./security/matilda.x
 
 FILETMP="/tmp/matilda_$$"
 

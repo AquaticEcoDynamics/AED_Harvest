@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ../security/dpird.x
+. ./security/dpird.x
 
 #FILE=/tmp/tmpx_$$.json
 FILE=tmpx_13751.json

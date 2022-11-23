@@ -1,14 +1,15 @@
 #!/bin/bash
 
-. ../security/lwn.x
+. ./security/lwn.x
 
 ISODATE=`date +%Y%m%d`
+YEAR=`date +%Y`
 
 WEBSITE="https://api.awsnetwork.com.au/v3/"
 LOGINPATH="auth/login"
 
 SITENAME="Narrung"
-DATADIR="data/${SITENAME}/"
+DATADIR="data/${YEAR}/harvest_lwn/${SITENAME}/"
 
 TMPPRE="/tmp/tmpx_$$_"
 TMPGRP=${TMPPRE}SGrps
@@ -39,7 +40,7 @@ H1="Content-Type: application/json"
    curl -X GET "${WEBSITE}sensor-groups/${SENSOR}/sensors" -H "${H1}" -H "${H2}" -s -o $TMPSNR
 
    ## #get actual data
-   mkdir ${DATADIR} >& /dev/null
+   mkdir -p ${DATADIR} >& /dev/null
 
    sed -e 's/{/\n{\n/g' -e 's/}/\n}\n/g' < $TMPSNR | grep '"id":' | while read line ; do
      SID=`echo $line | tr ',' '\n' | grep '"id":' | cut -f2 -d\:`

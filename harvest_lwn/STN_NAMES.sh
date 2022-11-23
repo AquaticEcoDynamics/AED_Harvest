@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ../security/lwn.x
+. ./security/lwn.x
 
 ISODATE=`date +%Y%m%d`
 
