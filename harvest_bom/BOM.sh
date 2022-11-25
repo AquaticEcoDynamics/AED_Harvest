@@ -7,20 +7,22 @@ TODAY=`date +%Y%m%d`
 case $1 in
   "barrack")   # Barrack St
      URL="http://www.bom.gov.au/fwo/IDW62404/IDW62404.509440.tbl.shtml"
-     COLLECT=bom_barrack
+     COLLECT=barrack
      ;;
   "meadow")    # Meadow St
      URL="http://www.bom.gov.au/fwo/IDW62404/IDW62404.509378.tbl.shtml"
-     COLLECT=bom_meadow
+     COLLECT=meadow
      ;;
   "kent")      # Kent St
      URL="http://www.bom.gov.au/fwo/IDW62404/IDW62404.509484.tbl.shtml"
-     COLLECT=bom_kent
+     COLLECT=kent
      ;;
    *) # none?
      exit 0
      ;;
 esac
+
+DATADIR="data/`date +%Y`/harvest_bom/${COLLECT}"
 
 if [ $DEBUG -eq 0 ] ; then
   FILE=tmpx.$$
@@ -47,9 +49,8 @@ makeiso () {
 }
 
 
-ARCHIVEF="data/${COLLECT}/${TODAY}.csv"
-COLLECTF="${COLLECT}_${TODAY}.csv"
-/bin/mkdir -p "data/${COLLECT}"
+ARCHIVEF="${DATADIR}/${TODAY}.csv"
+/bin/mkdir -p "${DATADIR}"
 
 ISODATE=0
 if [ -f $ARCHIVEF ] ; then
@@ -100,10 +101,6 @@ do
           echo "date,tide" > $ARCHIVEF
         fi
         echo "$DATE,$TIDE" >> $ARCHIVEF
-#       if [ ! -f $COLLECTF ] ; then
-#         echo "date,tide" > $COLLECTF
-#       fi
-#       echo "$DATE,$TIDE" >> $COLLECTF
       fi
     fi
   fi

@@ -14,6 +14,7 @@ ENDTIME=`date +%F`T${TIME}
 ISODATE=`date +%Y%m%d%H%M`
 #ISODATE=202006121444
 COUNT=0
+DATADIR="data/`date +%Y`/harvest_neon"
 
 #------------------------------------------------------------------------------#
 make_csv() {
@@ -91,10 +92,10 @@ show_nodes() {
        cat ${CHNTMP} | cut -f2 -d\[ | cut -f1 -d] | sed -e 's/},{/}\n{/g' | show_channels ${NodeNam} tmpx_${NodeNam}_$$.csv
        /bin/rm ${CHNTMP}
 
-       if [ ! -d data/neon_${NodeNam} ] ; then
-          mkdir -p data/neon_${NodeNam}
+       if [ ! -d ${DATADIR}/neon_${NodeNam} ] ; then
+          mkdir -p ${DATADIR}/neon_${NodeNam}
        fi
-       /bin/mv tmpx_${NodeNam}_$$.csv data/neon_${NodeNam}/${ISODATE}.csv
+       /bin/mv tmpx_${NodeNam}_$$.csv ${DATADIR}/neon_${NodeNam}/${ISODATE}.csv
    done
 }
 

@@ -130,12 +130,13 @@ append_csv() {
 #------------------------------------------------------------------------------#
 OUTFILE=me.csv
 
-if [ ! -d data ] ; then
-   mkdir -p data
+DATADIR="data/`date +%Y`/harvest_matilda/"
+if [ ! -d ${DATADIR} ] ; then
+   mkdir -p ${DATADIR}
 fi
 for dir in uwa_met_matilda uwa_wq_matilda uwa_sys_matilda ; do
-   if [ ! -d data/$dir ] ; then
-      mkdir -p data/$dir
+   if [ ! -d ${DATADIR}/$dir ] ; then
+      mkdir -p ${DATADIR}/$dir
    fi
 done
 
@@ -162,7 +163,7 @@ for node in ${met_nodes[*]} ; do
    COUNT=$((COUNT+1))
 done
 
-/bin/mv ${OUTFILE} data/uwa_met_matilda/${ISODATE}.csv
+/bin/mv ${OUTFILE} ${DATADIR}/uwa_met_matilda/${ISODATE}.csv
 
 COUNT=0
 
@@ -179,7 +180,7 @@ for node in ${wq_nodes[*]} ; do
    COUNT=$((COUNT+1))
 done
 
-/bin/mv ${OUTFILE} data/uwa_wq_matilda/${ISODATE}.csv
+/bin/mv ${OUTFILE} ${DATADIR}/uwa_wq_matilda/${ISODATE}.csv
 
 COUNT=0
 
@@ -196,7 +197,7 @@ for node in ${sys_nodes[*]} ; do
    COUNT=$((COUNT+1))
 done
 
-/bin/mv ${OUTFILE} data/uwa_sys_matilda/${ISODATE}.csv
+/bin/mv ${OUTFILE} ${DATADIR}/uwa_sys_matilda/${ISODATE}.csv
 
 exit
 

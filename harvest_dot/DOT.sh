@@ -29,6 +29,8 @@ case $1 in
      exit 0
      ;;
 esac
+DATADIR="data/`date +%Y`/harvest_dot/${COLLECT}"
+mkdir -p ${DATADIR} >& /dev/null
 
 if [ $DEBUG -eq 0 ] ; then
   FILE=tmpx.$$
@@ -152,9 +154,8 @@ while [ $I -lt $COUNTS ] ; do
   fi
 
 # echo Collect is \"$COLLECT\"
-  ARCHIVEF="data/${COLLECT}/${TODAY}.csv"
-  /bin/mkdir -p "data/${COLLECT}"
-  COLLECTF="${COLLECT}_${TODAY}.csv"
+  ARCHIVEF="${DATADIR}/${TODAY}.csv"
+  /bin/mkdir -p "${DATADIR}" >& /dev/null
 
   if [ -f $ARCHIVEF ] ; then
     # if file exists, get the last line and decode its date entry
@@ -172,10 +173,6 @@ while [ $I -lt $COUNTS ] ; do
       echo "date,tide,residual,predicted" > $ARCHIVEF
     fi
     echo "$FMTDATE,$TIDE,$RESID,$PRED" >> $ARCHIVEF
-#   if [ ! -f $COLLECTF ] ; then
-#     echo "date,tide,residual,predicted" > $COLLECTF
-#   fi
-#   echo "$FMTDATE,$TIDE,$RESID,$PRED" >> $COLLECTF
   fi
 
 # echo "=============================="

@@ -7,6 +7,8 @@ FILE=tmpx_13751.json
 OUTFILE=""
 DATE=""
 TIME=""
+DATADIR="data/`date +%Y`/harvest_dpird"
+mkdir -p $DATADIR >& /dev/null
 
 HOST="https://api.dpird.wa.gov.au/"
 
@@ -338,12 +340,12 @@ month=`echo $START | cut -f2 -d/`
 day=`echo $START | cut -f3 -d/`
 
   OUTFILE="dpird_SP_daily_${year}${month}${day}.csv"
-  if [ ! -f data/${year}/${year}${month}${day} ] ; then
+  if [ ! -f ${DATADIR}/${year}${month}${day}.csv ] ; then
      get_data SP $year $month $day
-     mkdir -p data/${year}
-     mv ${OUTFILE} data/${year}/${year}${month}${day}.csv
-  else
-     /bin/rm ${OUTFILE}
+     #mkdir -p data/${year}
+     mv ${OUTFILE} ${DATADIR}/${year}${month}${day}.csv
+# else
+#    /bin/rm ${OUTFILE}
   fi
   exit 0
 
