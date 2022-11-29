@@ -2,7 +2,6 @@
 
 . ./common/start.sh
 
-NOW="${YEAR}${MONTH}${DAY}"
 DATADIR="data/${YEAR}/harvest_bom_tide"
 
 TMPFILE="/tmp/tmpx$$_bom_tide"
@@ -13,7 +12,7 @@ if [ ! -d ${DATADIR} ] ; then
    mkdir ${DATADIR}
 fi
 
-wget -q $URL --user-agent="" -O $TMPFILE >& /dev/null
+wget -q $URL --user-agent="" -O $TMPFILE
 
 # Date & UTC Time,Sea Level,Water Temperature,Air Temperature,Barometric Pressure,Residuals,Adjusted Residuals,Wind Direction,Wind Gust,Wind Speed,Hillarys
 # 01-Jan-2021 00:00, 0.568,  24.5,  23.2, 1011.0, 0.165, 0.142,  166,   5.9,   2.1
@@ -27,7 +26,7 @@ grep -v Date $TMPFILE | while read line ; do
   ISODATE=`date --date="$DATE" +%Y%m%d%H%M%S`
   if [ $MYSTART -lt $ISODATE ] ; then
     if [ $MYEND -lt $ISODATE ] ; then
-      echo found end
+#     echo found end
       break;
     fi
     date=`to_std_time_fmt $ISODATE`
@@ -36,5 +35,7 @@ grep -v Date $TMPFILE | while read line ; do
   fi
 done
 
-echo done $TMPFILE for $MYSTART to $MYEND
-#/bin/rm $TMPFILE
+#echo done $TMPFILE for $MYSTART to $MYEND
+/bin/rm $TMPFILE
+
+. ./common/finish.sh

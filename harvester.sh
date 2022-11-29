@@ -21,6 +21,8 @@ DPIRDNEXT=0
 DPIRDWAIT=1day
 LWN_NEXT=0
 LWN_WAIT=12hours
+MDBANEXT=0
+MDBAWAIT=12hours
 
 
 # Use $RANDOM. It's often useful in combination with simple shell
@@ -37,11 +39,11 @@ while `true` ; do
 
   if [ $NOW -ge $BOM_NEXT ] ; then
     # echo run BOM.sh
-    ./harvest_bom/BOM.sh "barrack"
+    ./harvest_bom/BOM.sh --site "barrack"
     sleep 1
-    ./harvest_bom/BOM.sh "meadow"
+    ./harvest_bom/BOM.sh --site "meadow"
     sleep 1
-    ./harvest_bom/BOM.sh "kent"
+    ./harvest_bom/BOM.sh --site "kent"
 
     BOM_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $BOM_WAIT"`
 #   echo next BOM at $BOM_NEXT
@@ -55,11 +57,11 @@ while `true` ; do
 
   if [ $NOW -ge $DOT_NEXT ] ; then
     # echo run DOT.sh
-    ./harvest_dot/DOT.sh "fremantle"
-    ./harvest_dot/DOT.sh "barrack"
-    ./harvest_dot/DOT.sh "peel"
-    ./harvest_dot/DOT.sh "mandurah"
-    ./harvest_dot/DOT.sh "mozzie"
+    ./harvest_dot/DOT.sh --site "fremantle"
+    ./harvest_dot/DOT.sh --site "barrack"
+    ./harvest_dot/DOT.sh --site "peel"
+    ./harvest_dot/DOT.sh --site "mandurah"
+    ./harvest_dot/DOT.sh --site "mozzie"
     DOT_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $DOT_WAIT"`
 #   echo next DOT at $DOT_NEXT
   fi
@@ -96,6 +98,15 @@ while `true` ; do
     ./harvest_lwn/LWN.sh
     LWN_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $LWN_WAIT"`
 #   echo next LWN at $LWN_NEXT
+  fi
+
+  if [ $NOW -ge $MDBANEXT ] ; then
+    ./harvest_mdba/MDBA.sh --site Albert
+    ./harvest_mdba/MDBA.sh --site Alexandrina
+    ./harvest_mdba/MDBA.sh --site "Lock 1 Upstream"
+    ./harvest_mdba/MDBA.sh --site "Lock 1 Downstream"
+    MDBANEXT=`date +%Y%m%d%H%M --date="$TODAY + $MDBAWAIT"`
+#   echo next MDBA at $MDBANEXT
   fi
 
   # sleep for a random time between 1 and 3 mins

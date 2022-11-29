@@ -4,7 +4,7 @@
 
 TMPFILE="/tmp/tmpx$$_mdba.tmp"
 
-echo SITENAME in \"$SITENAME\"
+#echo SITENAME in \"$SITENAME\"
 case "$SITENAME" in
   "Alexandrina")
      export sitefile="lkalex"
@@ -29,9 +29,7 @@ SITENAME=`echo $SITENAME | tr ' ' '-' | tr [A-Z] [a-z]`
 #echo site now $SITENAME
 DATADIR="data/${YEAR}/harvest_mdba/${SITENAME}/"
 
-#curl -X GET https://riverdata.mdba.gov.au/lake-albert-calculated -s -o lac.xxx
-#curl -X GET https://riverdata.mdba.gov.au/sites/default/files/liveriverdata/csv/${sitefile}_historical.csv -s -o ${TMPFILE}
-echo fetch \"https://riverdata.mdba.gov.au/sites/default/files/liveriverdata/csv/${sitefile}.csv\"
+#echo fetch \"https://riverdata.mdba.gov.au/sites/default/files/liveriverdata/csv/${sitefile}.csv\"
 curl -X GET https://riverdata.mdba.gov.au/sites/default/files/liveriverdata/csv/${sitefile}.csv -s -o ${TMPFILE}
 
 to_mdba_time_fmt () {
@@ -71,4 +69,6 @@ fi
 
 /bin/rm ${TMPFILE}
 
-exit
+. ./common/finish.sh
+
+exit 0

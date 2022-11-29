@@ -176,8 +176,8 @@ while [ $I -lt $COUNTS ] ; do
 # echo "=============================="
 done
 
-if [ "$DEBUG" != "true" ] ; then
-  /bin/rm $FILE
-fi
+/bin/rm $FILE
+
+. ./common/finish.sh
 
 exit 0

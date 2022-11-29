@@ -198,6 +198,6 @@ done
 
 /bin/mv ${OUTFILE} ${DATADIR}/uwa_sys_matilda/${ISODATE}.csv
 
-exit
+. ./common/finish.sh
 
-
+exit 0

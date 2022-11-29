@@ -12,7 +12,7 @@ CHNTMP=${TMPPRE}ChannelList
 TIME=`date +%H:%M:00`
 STARTTIME=`date --date=-24hours +%F`T${TIME}
 ENDTIME=`date +%F`T${TIME}
-ISODATE=`date +%Y%m%d%H%M`
+ISODATE=`date +%Y%m%d`
 COUNT=0
 DATADIR="data/${YEAR}/harvest_neon"
 
@@ -67,7 +67,7 @@ show_channels() {
      COUNT=0
      ChanID=`echo $LINE | cut -f2 -d: | cut -f1 -d,`
      ChanNam=`echo $LINE | cut -f3 -d: | cut -f1 -d, | tr ' ' '_' | tr '\/' '-' | tr -d '\"'`
-     echo CHANNEL $ChanID   CALLED $ChanNam
+#    echo CHANNEL $ChanID   CALLED $ChanNam
 
      wget -q -O "${FTCHFILE}" --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetData/${ChanID}?StartTime=${STARTTIME}&EndTime=${ENDTIME}" > /dev/null 2>&1
 
@@ -85,7 +85,7 @@ show_nodes() {
    while read LINE ; do
        NodeID=`echo ${LINE} | cut -f2 -d: | cut -f1 -d,`
        NodeNam=`echo ${LINE} | cut -f3 -d: | cut -f1 -d, | tr ' ' '_' | tr -d '\"'`
-       echo NodeID ${NodeID} Called ${NodeNam} has the following channels :
+   #   echo NodeID ${NodeID} Called ${NodeNam} has the following channels :
 
        wget -q -O ${CHNTMP} --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetChannelList/${NodeID}?ShowInactive=false" > /dev/null 1>&1
 
@@ -105,9 +105,9 @@ wget -q -O ${TOKTMP} "${NEON_SERVER}/GetSession?u=${USERNAME}&p=${PASSWORD}" > /
 
 # Extract the token from the response
 LoginToken=`cat ${TOKTMP} | cut -f2 -d: | tr -d '\"' | tr -d '}' | tr -d '\\\'`
-cat ${TOKTMP}
-echo
-echo LoginToken=\"${LoginToken}\"
+#cat ${TOKTMP}
+#echo
+#echo LoginToken=\"${LoginToken}\"
 /bin/rm ${TOKTMP}
 
 #echo wget -q -O ${NODTMP} --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetNodeList"
@@ -116,8 +116,6 @@ wget -q -O ${NODTMP} --header="X-Authentication-Token:${LoginToken}" "${NEON_SER
 cat ${NODTMP} | cut -f2 -d\[ | cut -f1 -d] | sed -e 's/},{/}\n{/g' | show_nodes
 /bin/rm ${NODTMP}
 
-
-#echo $STARTTIME
-#echo $ENDTIME
+. ./common/finish.sh
 
 exit 0

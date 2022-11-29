@@ -28,4 +28,6 @@ STATLN=`sed -e 's/{/\n{\n/g' -e 's/}/\n}\n/g' < $TMPGRP | grep '"name":"15 minut
 echo $STATLN | tr ',' '\n' | grep '"stationName":' | cut -f2 -d\: | tr -d '"'
 
 /bin/rm ${TMPPRE}*
+. ./common/finish.sh
+
 exit 0

@@ -246,8 +246,8 @@ get_data() {
 
    STARTTIME=`date --date=${2}-${3}-${4} +%F`T01:00Z
    ENDTIME=`date --date=${2}-${3}-${4}+1day +%F`T00:00Z
-   echo start $STARTTIME
-   echo end   $ENDTIME
+#  echo start $STARTTIME
+#  echo end   $ENDTIME
 
    OUTFILE="dpird_${1}_daily_${2}${3}${4}.csv"
 
@@ -272,7 +272,7 @@ get_data() {
 #  echo "Curling ${STARTTIME} - ${ENDTIME}"
 
    CURLCMD="curl -X GET ${HOST}v2/weather/stations/${STATION}/summaries/hourly?startDateTime=${STARTTIME}&endDateTime=${ENDTIME}&offset=0&limit=25&select=airTemperature,airTemperatureAvg,airTemperatureMax,airTemperatureMin,deltaTAvg,deltaTMax,deltaTMin,dewPointAvg,dewPointMax,dewPointMin,etoShortCrop,etoTallCrop,rainfall,relativeHumidity,relativeHumidityAvg,relativeHumidityMax,relativeHumidityMin,soilTemperatureAvg,soilTemperatureMax,soilTemperatureMin,solarExposure,wetBulbAvg,wetBulbMax,wind,windAvgSpeed,windMaxSpeed -H accept:application/json -H API-KEY:${APIKEY} -s -o ${FILE}"
-   echo ${CURLCMD}
+#  echo ${CURLCMD}
    ${CURLCMD}
 
 
@@ -364,5 +364,7 @@ day=`echo $START | cut -f3 -d/`
 #     sleep 3600
 #   done
 # done
+
+. ./common/finish.sh
 
 exit 0

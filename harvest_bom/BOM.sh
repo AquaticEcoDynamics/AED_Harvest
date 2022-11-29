@@ -4,7 +4,6 @@
 #
 . ./common/start.sh
 
-
 case $SITENAME in
   "barrack")   # Barrack St
      URL="http://www.bom.gov.au/fwo/IDW62404/IDW62404.509440.tbl.shtml"
@@ -23,31 +22,30 @@ case $SITENAME in
      ;;
 esac
 
-DATADIR="data/`date +%Y`/harvest_bom/${COLLECT}"
+DATADIR="data/${YEAR}/harvest_bom/${COLLECT}"
 
-if [ $DEBUG -eq 0 ] ; then
-  FILE=/tmp/tmpx.$$
-else
-  FILE=/tmp/tmpx.bom
-fi
+FILE=/tmp/tmpx$$
 
 # a small subroutine to convert date data from "DD/MM/YYY HH:mm" to
 # isodate format (YYYYMMDDHHmm) for easy comparison
 #
 # NB: remember to call with date in quotes
 makeiso () {
-  date=$1
+  date=`echo $1 | cut -f1 -d\ `
+  time=`echo $1 | cut -f2 -d\ `
+
   day=`echo $date | cut -f1 -d/`
   mnth=`echo $date | cut -f2 -d/`
-  year=`echo $date | cut -f3 -d/ | cut -f1 -d\ `
+  year=`echo $date | cut -f3 -d/`
 
-  time=`echo $date | cut -f2 -d\ `
   hour=`echo $time | cut -f1 -d:`
   min=`echo $time | cut -f2 -d:`
 
-  echo $year$mnth$day$hour$min
+  echo ${year}${mnth}${day}${hour}${min}
 }
 
+
+SRCHDATE="${DAY}/${MONTH}/${YEAR}"
 
 ARCHIVEF="${DATADIR}/${TODAY}.csv"
 /bin/mkdir -p "${DATADIR}"
@@ -61,11 +59,8 @@ else
   LASTENTRY=000000000000
 fi
 
-
-# for debugging we use a local file called bom.html - otherwise get it off the net
-if [ $DEBUG -eq 0 ] ; then
-  wget -q $URL --user-agent="" -O $FILE >& /dev/null
-fi
+# Fetch the data file
+wget -q $URL --user-agent="" -O $FILE
 
 TITLE=`sed '/<title>/!d; /<\/title>/!d' < $FILE | cut -f2 -d\> | cut -f1 -d\<`
 
@@ -82,6 +77,7 @@ do
       if [ "$line" = "" ] ; then read line ; fi
       if [ $? -eq 0 ] ; then
         DATE=`echo $line | cut -f2 -d\> | cut -f1 -d\<`
+        TD=`echo $DATE | cut -f1 -d\ `
       fi
       read line
       if [ $? -eq 0 ] ; then
@@ -89,16 +85,19 @@ do
       fi
       read line
 
-      # date format is : 24/11/2021 08:31
-      ISODATE=`makeiso "$DATE"`
+      if [ "$TD" = "$SRCHDATE" ] ; then
 
-      if [ $ISODATE -gt $LASTENTRY ] ; then
-      # echo Adding "$DATE,$TIDE"
-        DATE=`to_std_time_fmt $ISODATE`
-        if [ ! -f $ARCHIVEF ] ; then
-          echo "date,tide" > $ARCHIVEF
+        # date format is : 24/11/2021 08:31
+        ISODATE=`makeiso "$DATE"`
+
+        if [ $ISODATE -gt $LASTENTRY ] ; then
+        # echo Adding "$DATE,$TIDE"
+          DATE=`to_std_time_fmt $ISODATE`
+          if [ ! -f $ARCHIVEF ] ; then
+            echo "date,tide" > $ARCHIVEF
+          fi
+          echo "$DATE,$TIDE" >> $ARCHIVEF
         fi
-        echo "$DATE,$TIDE" >> $ARCHIVEF
       fi
     fi
   fi
@@ -112,7 +111,7 @@ done
 tr -d '\r' < $FILE | sed -n '/<tbody/,/<\/tbody/p' | do_table_rows
 
 
-if [ $DEBUG -eq 0 ] ; then
-  # if we got it off the net we can remove it
-  /bin/rm $FILE
-fi
+# if we got it off the net we can remove it
+/bin/rm $FILE
+
+. ./common/finish.sh
