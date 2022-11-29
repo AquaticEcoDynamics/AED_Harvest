@@ -34,7 +34,7 @@ mkdir -p ${DATADIR} >& /dev/null
 if [ "$DEBUG" != "true" ] ; then
   FILE=tmpx.$$
 else
-  if [ "$1" = "mozzie" ] ; then
+  if [ "$SITENAME" = "mozzie" ] ; then
     FILE=tmpx.moz
   else
     FILE=tmpx.dot
@@ -61,7 +61,6 @@ makemonth () {
 
 makeiso () {
   # format was Tues 23rd Nov 2021 11:15hrs
-  ISODATE=0
   day=`echo $1 | cut -f2 -d\  | cut -b1-2 | sed 's/[a-z]*//g'`
   if [ $day -lt 10 ] ; then
     day="0$day"
@@ -75,20 +74,20 @@ makeiso () {
   mins=`echo $time | cut -f2 -d\:`
 
   ISODATE=$year$mnth$day$hour$mins
-  FMTDATE="$day-$mnth-$year $hour:$mins"
+  FMTDATE="$year-$mnth-$day $hour:$mins"
 }
 
 lastiso () {
   date=$1
-  day=`echo $date | cut -f1 -d/`
-  mnth=`echo $date | cut -f2 -d/`
-  year=`echo $date | cut -f3 -d/ | cut -f1 -d\ `
+  year=`echo $date | cut -f1 -d-`
+  mnth=`echo $date | cut -f2 -d-`
+  day=`echo $date | cut -f3 -d- | cut -f1 -d\ `
 
   time=`echo $date | cut -f2 -d\ `
   hour=`echo $time | cut -f1 -d:`
   min=`echo $time | cut -f2 -d:`
 
-  LASTENTRY=$year$mnth$day$hour$min
+  echo $year$mnth$day$hour$min
 }
 
 
@@ -158,13 +157,13 @@ while [ $I -lt $COUNTS ] ; do
   if [ -f $ARCHIVEF ] ; then
     # if file exists, get the last line and decode its date entry
     LAST=`tail -1 $ARCHIVEF | cut -f1 -d,`
-echo last in $ARCHIVEF is $LAST
-    lastiso "$LAST"
+#echo last in $ARCHIVEF is $LAST
+    LASTENTRY=`lastiso "$LAST"`
   else
     LASTENTRY=0
   fi
 
-  echo Last was \"$LASTENTRY\" now is \"$ISODATE\"
+# echo Last was \"$LASTENTRY\" now is \"$ISODATE\"
 
   if [ $ISODATE -gt $LASTENTRY ] ; then
 #   echo Adding "$FMTDATE,$TIDE,$RESID,$PRED"
