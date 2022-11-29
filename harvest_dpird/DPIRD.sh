@@ -1,13 +1,14 @@
 #!/bin/bash
 
 . ./security/dpird.x
+. ./common/start.sh
 
-#FILE=/tmp/tmpx_$$.json
-FILE=tmpx_13751.json
+FILE=/tmp/tmpx_$$.json
+
 OUTFILE=""
 DATE=""
 TIME=""
-DATADIR="data/`date +%Y`/harvest_dpird"
+DATADIR="data/${YEAR}/harvest_dpird"
 mkdir -p $DATADIR >& /dev/null
 
 HOST="https://api.dpird.wa.gov.au/"
@@ -199,7 +200,7 @@ extract_entry () {
    read line  # should be ']'
    read line  # should be '}'
 
-echo -n "$DATE,$TIME,$STATION,"             >> ${OUTFILE}
+echo -n "$DATE $TIME,$STATION,"             >> ${OUTFILE}
 echo -n "$ATMIN,$ATMAX,$ATAVG,"             >> ${OUTFILE}
 echo -n "$RLMIN,$RLMAX,$RLAVG,"             >> ${OUTFILE}
 echo -n "$SOLARTOT,"                        >> ${OUTFILE}
@@ -287,7 +288,7 @@ get_data() {
    #                            wet_bulb_degc_min,wet_bulb_degc_max,wet_bulb_degc_ave,
    #                            delta_t_degc_min,delta_t_degc_max,delta_t_degc_ave,number_recordings
 
-   echo "date,time,station,air_temp_min (C),air_temp_max (C),air_temp_avg (C),rel_hum_min (%),rel_hum_max (%),rel_hum_ave (%),solrad (W/m2),wind_height (m),wind_speed_max (km/h),wind_direction_max (deg),wind_speed_avg  (km/h),wind_direction_avg (deg)" > ${OUTFILE}
+   echo "datetime,station,air_temp_min (C),air_temp_max (C),air_temp_avg (C),rel_hum_min (%),rel_hum_max (%),rel_hum_ave (%),solrad (W/m2),wind_height (m),wind_speed_max (km/h),wind_direction_max (deg),wind_speed_avg  (km/h),wind_direction_avg (deg)" > ${OUTFILE}
 
    sed -e 's/{/\n{\n/g' -e 's/}/\n}\n/g' < ${FILE} | extract_data
 

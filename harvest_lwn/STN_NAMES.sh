@@ -1,8 +1,7 @@
 #!/bin/bash
 
 . ./security/lwn.x
-
-ISODATE=`date +%Y%m%d`
+. ./common/start.sh
 
 WEBSITE="https://api.awsnetwork.com.au/v3/"
 LOGINPATH="auth/login"

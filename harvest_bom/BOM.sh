@@ -1,10 +1,11 @@
 #!/bin/bash
+#
+# harvest_bom/BOM.sh
+#
+. ./common/start.sh
 
-DEBUG=0
-NOW=`date +%Y%m%d%H%M`
-TODAY=`date +%Y%m%d`
 
-case $1 in
+case $SITENAME in
   "barrack")   # Barrack St
      URL="http://www.bom.gov.au/fwo/IDW62404/IDW62404.509440.tbl.shtml"
      COLLECT=barrack
@@ -25,9 +26,9 @@ esac
 DATADIR="data/`date +%Y`/harvest_bom/${COLLECT}"
 
 if [ $DEBUG -eq 0 ] ; then
-  FILE=tmpx.$$
+  FILE=/tmp/tmpx.$$
 else
-  FILE=tmpx.bom
+  FILE=/tmp/tmpx.bom
 fi
 
 # a small subroutine to convert date data from "DD/MM/YYY HH:mm" to
@@ -44,25 +45,21 @@ makeiso () {
   hour=`echo $time | cut -f1 -d:`
   min=`echo $time | cut -f2 -d:`
 
-  ISODATE=$year$mnth$day$hour$min
-# echo $ISODATE
+  echo $year$mnth$day$hour$min
 }
 
 
 ARCHIVEF="${DATADIR}/${TODAY}.csv"
 /bin/mkdir -p "${DATADIR}"
 
-ISODATE=0
 if [ -f $ARCHIVEF ] ; then
   # if file exists, get the last line and decode its date entry
   LAST=`tail -1 $ARCHIVEF | cut -f1 -d,`
 # echo LAST = $LAST
-  makeiso "$LAST"
-  LASTENTRY=$ISODATE
+  LASTENTRY=`makeiso "$LAST"`
 else
   LASTENTRY=000000000000
 fi
-#echo LASTENTRY = $LASTENTRY
 
 
 # for debugging we use a local file called bom.html - otherwise get it off the net
@@ -93,10 +90,11 @@ do
       read line
 
       # date format is : 24/11/2021 08:31
-      makeiso "$DATE"
+      ISODATE=`makeiso "$DATE"`
 
       if [ $ISODATE -gt $LASTENTRY ] ; then
       # echo Adding "$DATE,$TIDE"
+        DATE=`to_std_time_fmt $ISODATE`
         if [ ! -f $ARCHIVEF ] ; then
           echo "date,tide" > $ARCHIVEF
         fi

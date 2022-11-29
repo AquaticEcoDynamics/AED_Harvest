@@ -1,6 +1,7 @@
 #!/bin/bash
 
 . ./security/neon.x
+. ./common/start.sh
 
 NEON_SERVER="https://restservice-neon.unidata.com.au:443/NeonRESTService.svc"
 
@@ -12,9 +13,8 @@ TIME=`date +%H:%M:00`
 STARTTIME=`date --date=-24hours +%F`T${TIME}
 ENDTIME=`date +%F`T${TIME}
 ISODATE=`date +%Y%m%d%H%M`
-#ISODATE=202006121444
 COUNT=0
-DATADIR="data/`date +%Y`/harvest_neon"
+DATADIR="data/${YEAR}/harvest_neon"
 
 #------------------------------------------------------------------------------#
 make_csv() {
@@ -69,7 +69,7 @@ show_channels() {
      ChanNam=`echo $LINE | cut -f3 -d: | cut -f1 -d, | tr ' ' '_' | tr '\/' '-' | tr -d '\"'`
      echo CHANNEL $ChanID   CALLED $ChanNam
 
-     wget -O "${FTCHFILE}" --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetData/${ChanID}?StartTime=${STARTTIME}&EndTime=${ENDTIME}" > /dev/null 2>&1
+     wget -q -O "${FTCHFILE}" --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetData/${ChanID}?StartTime=${STARTTIME}&EndTime=${ENDTIME}" > /dev/null 2>&1
 
 #    mkdir -p $1/${ChanNam} >/dev/null 2>&1
 #    cat ${FTCHFILE} | cut -f2 -d\[ | cut -f1 -d] | sed -e 's/},{/}\n{/g' | make_csv "$1/${ChanNam}/${ISODATE}.csv"
@@ -87,7 +87,7 @@ show_nodes() {
        NodeNam=`echo ${LINE} | cut -f3 -d: | cut -f1 -d, | tr ' ' '_' | tr -d '\"'`
        echo NodeID ${NodeID} Called ${NodeNam} has the following channels :
 
-       wget -O ${CHNTMP} --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetChannelList/${NodeID}?ShowInactive=false" > /dev/null 1>&1
+       wget -q -O ${CHNTMP} --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetChannelList/${NodeID}?ShowInactive=false" > /dev/null 1>&1
 
        cat ${CHNTMP} | cut -f2 -d\[ | cut -f1 -d] | sed -e 's/},{/}\n{/g' | show_channels ${NodeNam} tmpx_${NodeNam}_$$.csv
        /bin/rm ${CHNTMP}
@@ -101,7 +101,7 @@ show_nodes() {
 
 #------------------------------------------------------------------------------#
 
-wget -O ${TOKTMP} "${NEON_SERVER}/GetSession?u=${USERNAME}&p=${PASSWORD}" > /dev/null 2>&1
+wget -q -O ${TOKTMP} "${NEON_SERVER}/GetSession?u=${USERNAME}&p=${PASSWORD}" > /dev/null 2>&1
 
 # Extract the token from the response
 LoginToken=`cat ${TOKTMP} | cut -f2 -d: | tr -d '\"' | tr -d '}' | tr -d '\\\'`
@@ -110,8 +110,8 @@ echo
 echo LoginToken=\"${LoginToken}\"
 /bin/rm ${TOKTMP}
 
-#echo wget -O ${NODTMP} --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetNodeList"
-wget -O ${NODTMP} --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetNodeList" > /dev/null 2>&1
+#echo wget -q -O ${NODTMP} --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetNodeList"
+wget -q -O ${NODTMP} --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetNodeList" > /dev/null 2>&1
 
 cat ${NODTMP} | cut -f2 -d\[ | cut -f1 -d] | sed -e 's/},{/}\n{/g' | show_nodes
 /bin/rm ${NODTMP}

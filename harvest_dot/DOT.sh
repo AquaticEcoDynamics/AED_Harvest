@@ -1,10 +1,8 @@
 #!/bin/bash
 
-DEBUG=0
-NOW=`date +%Y%m%d%H%M`
-TODAY=`date +%Y%m%d`
+. ./common/start.sh
 
-case $1 in
+case $SITENAME in
    "fremantle")
      URL="https://www.transport.wa.gov.au/imarine/fremantle-fishing-boat-harbour-tide.asp"
      COLLECT="dot_fremantle"
@@ -29,10 +27,11 @@ case $1 in
      exit 0
      ;;
 esac
-DATADIR="data/`date +%Y`/harvest_dot/${COLLECT}"
+
+DATADIR="data/${YEAR}/harvest_dot/${COLLECT}"
 mkdir -p ${DATADIR} >& /dev/null
 
-if [ $DEBUG -eq 0 ] ; then
+if [ "$DEBUG" != "true" ] ; then
   FILE=tmpx.$$
 else
   if [ "$1" = "mozzie" ] ; then
@@ -76,7 +75,7 @@ makeiso () {
   mins=`echo $time | cut -f2 -d\:`
 
   ISODATE=$year$mnth$day$hour$mins
-  FMTDATE="$day/$mnth/$year $hour:$mins"
+  FMTDATE="$day-$mnth-$year $hour:$mins"
 }
 
 lastiso () {
@@ -93,7 +92,7 @@ lastiso () {
 }
 
 
-if [ $DEBUG -eq 0 ] ; then
+if [ "$DEBUG" != "true" ] ; then
   wget -q $URL -O $FILE >& /dev/null
 fi
 
@@ -135,7 +134,6 @@ while [ $I -lt $COUNTS ] ; do
   NAME=`echo $NAME | tr ' ' '_' | tr "[:upper:]" "[:lower:]"`
 
   makeiso "`echo $UPDATED | cut -f${I} -d\|`"
-  UPDT=$FMTDATE
 
   LN=`echo $TLNX | cut -f${I} -d\|`
   TIDE=`tr -d '\r' < $FILE | sed -n "$((LN+1))p" | cut -f3 -d \> | cut -f1 -d\< `
@@ -160,6 +158,7 @@ while [ $I -lt $COUNTS ] ; do
   if [ -f $ARCHIVEF ] ; then
     # if file exists, get the last line and decode its date entry
     LAST=`tail -1 $ARCHIVEF | cut -f1 -d,`
+echo last in $ARCHIVEF is $LAST
     lastiso "$LAST"
   else
     LASTENTRY=0
@@ -178,7 +177,7 @@ while [ $I -lt $COUNTS ] ; do
 # echo "=============================="
 done
 
-if [ $DEBUG -eq 0 ] ; then
+if [ "$DEBUG" != "true" ] ; then
   /bin/rm $FILE
 fi
 

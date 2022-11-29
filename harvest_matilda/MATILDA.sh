@@ -1,16 +1,15 @@
 #!/bin/bash
-
+#
+# harvest_matilda/MATILDA.sh
+#
 . ./security/matilda.x
+. ./common/start.sh
 
-FILETMP="/tmp/matilda_$$"
+FILETMP="/tmp/tmpx$$_matilda"
 
 ISODATE=`date --date=-1day +%Y%m%d`
 STARTTIME=`date --date=-1day +%F`T00:00:00
 ENDTIME=`date +%F`T00:00:00
-
-#ISODATE=20211010
-#STARTTIME="2021-10-10T00:00:00"
-#ENDTIME="2021-10-11T00:00:00"
 
 HOST="https://api.eagle.io/api/v1/nodes"
 COUNT=0
@@ -130,7 +129,7 @@ append_csv() {
 #------------------------------------------------------------------------------#
 OUTFILE=me.csv
 
-DATADIR="data/`date +%Y`/harvest_matilda/"
+DATADIR="data/${YEAR}/harvest_matilda/"
 if [ ! -d ${DATADIR} ] ; then
    mkdir -p ${DATADIR}
 fi

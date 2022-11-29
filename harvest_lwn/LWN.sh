@@ -1,22 +1,22 @@
 #!/bin/bash
 
 . ./security/lwn.x
-
-ISODATE=`date +%Y%m%d`
-YEAR=`date +%Y`
+. ./common/start.sh
 
 WEBSITE="https://api.awsnetwork.com.au/v3/"
 LOGINPATH="auth/login"
 
-SITENAME="Narrung"
-DATADIR="data/${YEAR}/harvest_lwn/${SITENAME}/"
-
-TMPPRE="/tmp/tmpx_$$_"
+TMPPRE="/tmp/tmpx$$_"
 TMPGRP=${TMPPRE}SGrps
 TMPLST=${TMPPRE}Lst
 TMPSNR=${TMPPRE}Snsr
 
 H1="Content-Type: application/json"
+
+if [ "$SITENAME" = "" ] ; then
+  SITENAME="Narrung"
+fi
+DATADIR="data/${YEAR}/harvest_lwn/${SITENAME}/"
 
 #------------------------------------------------------------------------------#
 # Get all parameters at a site between start date and end date
@@ -50,17 +50,19 @@ H1="Content-Type: application/json"
      mkdir ${DATADIR}/${SNSRNM} >& /dev/null
 
      if [ ! -f "${DATADIR}/${SNSRNM}/${ISODATE}.csv" ] ; then
-       echo "Time,Timezone,Value" > ${DATADIR}/${SNSRNM}/${ISODATE}.csv
+       echo "Time,Value" > ${DATADIR}/${SNSRNM}/${ISODATE}.csv
      else
        # might want to extract the last line time and only add later data
-       LT=`tail -1 ${DATADIR}/${SNSRNM}/${ISODATE}.csv | cut -f1 -d,`
+       LX=`tail -1 ${DATADIR}/${SNSRNM}/${ISODATE}.csv | cut -f1 -d,`
+       LT=`date --date="$TODAY" +%Y%m%d%H%M%S`
      fi
      if [ "$LT" = "" ] ; then
        LT="0"
      fi
+     if [ $LT -lt $MYSTART ] ; then
+       LT=$MYSTART
+     fi
 
-     START=`date +%Y`"-01-01"
-     END=`date +%Y-%m-%d`
      QUERY="start=${START}&end=${END}&perPage=1000000&page=1"
 
 #    echo "curl -X GET "${WEBSITE}sensors/${SID}/readings?${QUERY}" -H "${H1}" -H "${H2}" -s -o ${TMPSNR}_${SID}"
@@ -70,14 +72,19 @@ H1="Content-Type: application/json"
        L2=`echo $line | tr ',' '\n' | grep -w time | cut -f2- -d\: | tr -d '"'`
        TIME=`echo $L2 | tr -d '-' | tr -d 'T' | tr -d ':' | cut -f1 -d\.`
 
+       if [ $TIME -gt $MYEND ] ; then
+#        echo breaking at time $TIME being greater than my end of $MYEND for sensor ${SID}
+         break
+       fi
        if [ $TIME -gt $LT ] ; then
          VALUE=`echo $line | tr ',' '\n' | grep -w value | cut -f2 -d\: | tr -d '"'`
-         TIMEZONE=`echo $line | tr ',' '\n' | grep -w timezone | cut -f2 -d\: | tr -d '"'`
 
-         echo "$TIME,$TIMEZONE,$VALUE" >> ${DATADIR}/${SNSRNM}/${ISODATE}.csv
+         LTIME="`to_std_time_fmt $TIME`"
+         echo "$LTIME,$VALUE" >> ${DATADIR}/${SNSRNM}/${ISODATE}.csv
        fi
      done
    done
 
    /bin/rm ${TMPPRE}*
+
 exit

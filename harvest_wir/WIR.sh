@@ -1,11 +1,12 @@
 #!/bin/bash
 
+. ./common/start.sh
+
 URL="https://kumina.water.wa.gov.au/waterinformation/wir/reports/publish/"
 
-NOW=`date +%Y%m%d%H%M`
 TODAY=`date +%Y%m%d`
 
-DATADIR="data/`date +%Y`/harvest_wir/"
+DATADIR="data/${YEAR}/harvest_wir/"
 
 for WHICH in 6163414 6163441 6163948 6163949 6163950 6163951 6164394 6164648 6164677 6164685 ; do
 
