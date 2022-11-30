@@ -1,51 +1,79 @@
 #!/bin/bash
 
-DEBUG=0
+TODAY=""
+BACKTIME=""
+DEBUG=false
 
-#cd /Data/AED_Harvest
+while [ $# -gt 0 ] ; do
+  case $1 in
+    --debug)
+      export DEBUG=true
+      ;;
+    --today)
+      shift
+      TODAY="$1"
+      ;;
+    *)
+      ;;
+  esac
+  shift
+done
+
+if [ "$TODAY" != "" ] ; then
+  Y=`echo $TODAY | cut -f1 -d-`
+  if [ "$Y" = "$TODAY" ] ; then
+    echo when asking for a specific date, please use \"--today YYYY-MM-DD\"
+    exit 1
+  fi
+# M=`echo $TODAY | cut -f2 -d-`
+# D=`echo $TODAY | cut -f3 -d-`
+  BACKTIME="--today $TODAY"
+fi
+
+echo BACKTIME is \"$BACKTIME\"
 
     echo harvest_bom barrack
-    ./harvest_bom/BOM.sh --site barrack
+    ./harvest_bom/BOM.sh $BACKTIME --site barrack
     sleep 1
     echo harvest_bom meadow
-    ./harvest_bom/BOM.sh --site meadow
+    ./harvest_bom/BOM.sh $BACKTIME --site meadow
     sleep 1
     echo harvest_bom kent
-    ./harvest_bom/BOM.sh --site kent
+    ./harvest_bom/BOM.sh $BACKTIME --site kent
 
     echo harvest_bom_tide
-    ./harvest_bom_tide/BOM_tide.sh
+    ./harvest_bom_tide/BOM_tide.sh $BACKTIME
 
     echo harvest_dot fremantle
-    ./harvest_dot/DOT.sh --site fremantle
+    ./harvest_dot/DOT.sh $BACKTIME --site fremantle
     echo harvest_dot barrack
-    ./harvest_dot/DOT.sh --site barrack
+    ./harvest_dot/DOT.sh $BACKTIME --site barrack
     echo harvest_dot peel
-    ./harvest_dot/DOT.sh --site peel
+    ./harvest_dot/DOT.sh $BACKTIME --site peel
     echo harvest_dot mandurah
-    ./harvest_dot/DOT.sh --site mandurah
+    ./harvest_dot/DOT.sh $BACKTIME --site mandurah
     echo harvest_dot mozzie
-    ./harvest_dot/DOT.sh --site mozzie
+    ./harvest_dot/DOT.sh $BACKTIME --site mozzie
 
     echo harvest_wir
-    ./harvest_wir/WIR.sh
+    ./harvest_wir/WIR.sh $BACKTIME
 
     echo harvest_neon
-    ./harvest_neon/NEON.sh
+    ./harvest_neon/NEON.sh $BACKTIME
 
     echo harvest_matilda
-    ./harvest_matilda/MATILDA.sh
+    ./harvest_matilda/MATILDA.sh $BACKTIME
 
     echo harvest_dpird
-    ./harvest_dpird/DPIRD.sh
+    ./harvest_dpird/DPIRD.sh $BACKTIME
 
     echo harvest_lwn
-    ./harvest_lwn/LWN.sh
+    ./harvest_lwn/LWN.sh $BACKTIME
 
     echo harvest_mdba
-    ./harvest_mdba/MDBA.sh --site Albert
-    ./harvest_mdba/MDBA.sh --site Alexandrina
-    ./harvest_mdba/MDBA.sh --site "Lock 1 Upstream"
-    ./harvest_mdba/MDBA.sh --site "Lock 1 Downstream"
+    ./harvest_mdba/MDBA.sh $BACKTIME --site Albert
+    ./harvest_mdba/MDBA.sh $BACKTIME --site Alexandrina
+    ./harvest_mdba/MDBA.sh $BACKTIME --site "Lock 1 Upstream"
+    ./harvest_mdba/MDBA.sh $BACKTIME --site "Lock 1 Downstream"
 
 exit 0

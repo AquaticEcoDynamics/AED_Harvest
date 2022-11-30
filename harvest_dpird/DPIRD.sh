@@ -296,74 +296,21 @@ get_data() {
 }
 #------------------------------------------------------------------------------#
 
-#------------------------------------------------------------------------------#
-leap_year() {
-  leap=$1
-  if [ `expr $leap % 400` -eq 0 ] ; then
-    echo 'Y'
-  elif [ `expr $leap % 100` -eq 0 ] ; then
-    echo 'N'
-  elif [ `expr $leap % 4` -eq 0 ] ; then
-    echo 'Y'
-  else
-    echo 'N'
-  fi
-}
-#------------------------------------------------------------------------------#
 
-#------------------------------------------------------------------------------#
-days_in_month () {
- case $1 in
-   01) echo 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ;;
-   02) if [ "`leap_year $2`" = "Y" ] ; then
-          echo 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29
-       else
-          echo 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28
-       fi ;;
-   03) echo 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ;;
-   04) echo 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30    ;;
-   05) echo 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ;;
-   06) echo 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30    ;;
-   07) echo 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ;;
-   08) echo 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ;;
-   09) echo 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30    ;;
-   10) echo 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ;;
-   11) echo 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30    ;;
-   12) echo 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ;;
- esac
-}
-#------------------------------------------------------------------------------#
+#START=`date --date=-1day +%Y/%m/%d`
+#year=`echo $START | cut -f1 -d/`
+#month=`echo $START | cut -f2 -d/`
+#day=`echo $START | cut -f3 -d/`
 
-
-START=`date --date=-1day +%Y/%m/%d`
-year=`echo $START | cut -f1 -d/`
-month=`echo $START | cut -f2 -d/`
-day=`echo $START | cut -f3 -d/`
-
-  OUTFILE="dpird_SP_daily_${year}${month}${day}.csv"
-  if [ ! -f ${DATADIR}/${year}${month}${day}.csv ] ; then
-     get_data SP $year $month $day
-     #mkdir -p data/${year}
-     mv ${OUTFILE} ${DATADIR}/${year}${month}${day}.csv
+  OUTFILE="dpird_SP_daily_${YEAR}${MONTH}${DAY}.csv"
+  if [ ! -f ${DATADIR}/${YEAR}${MONTH}${DAY}.csv ] ; then
+     get_data SP $YEAR $MONTH $DAY
+     #mkdir -p data/${YEAR}
+     mv ${OUTFILE} ${DATADIR}/${YEAR}${MONTH}${DAY}.csv
 # else
 #    /bin/rm ${OUTFILE}
   fi
   exit 0
-
-# This for back filling 2016 and 2017
-# for year in 2016 2017 ; do
-#   for month in 01 02 03 04 05 06 07 08 09 10 11 12 ; do
-#     for day in `days_in_month $month $year` ; do
-#       OUTFILE="SP_daily_${year}${month}${day}.csv"
-#       if [ ! -f archive/${year}/${OUTFILE} ] ; then
-#         get_data SP $year $month $day
-#         mkdir -p archive/${year}
-#         mv ${OUTFILE} archive/${year}
-#       fi
-#     done
-#     sleep 3600
-#   done
-# done
 
 . ./common/finish.sh
 

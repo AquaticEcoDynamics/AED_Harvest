@@ -8,10 +8,6 @@ TMPFILE="/tmp/tmpx$$_bom_tide"
 
 URL="http://www.bom.gov.au/ntc/IDO71012/IDO71012_${YEAR}.csv"
 
-if [ ! -d ${DATADIR} ] ; then
-   mkdir ${DATADIR}
-fi
-
 wget -q $URL --user-agent="" -O $TMPFILE
 
 # Date & UTC Time,Sea Level,Water Temperature,Air Temperature,Barometric Pressure,Residuals,Adjusted Residuals,Wind Direction,Wind Gust,Wind Speed,Hillarys
@@ -19,7 +15,6 @@ wget -q $URL --user-agent="" -O $TMPFILE
 
 line=`head -1 $TMPFILE`
 HEADER="DateTime,`echo $line | cut -f2- -d,`"
-echo $HEADER > ${DATADIR}/${OUTFILE}
 
 grep -v Date $TMPFILE | while read line ; do
   DATE=`echo $line | cut -f1 -d,`
@@ -28,6 +23,12 @@ grep -v Date $TMPFILE | while read line ; do
     if [ $MYEND -lt $ISODATE ] ; then
 #     echo found end
       break;
+    fi
+    if [ ! -f ${DATADIR}/${OUTFILE} ] ; then
+      if [ ! -d ${DATADIR} ] ; then
+        /bin/mkdir -p ${DATADIR}
+      fi
+      echo $HEADER > ${DATADIR}/${OUTFILE}
     fi
     date=`to_std_time_fmt $ISODATE`
     line=`echo $line | cut -f2- -d,`

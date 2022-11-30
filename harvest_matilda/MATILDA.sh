@@ -7,9 +7,15 @@
 
 FILETMP="/tmp/tmpx$$_matilda"
 
-ISODATE=`date --date=-1day +%Y%m%d`
-STARTTIME=`date --date=-1day +%F`T00:00:00
-ENDTIME=`date +%F`T00:00:00
+#ISODATE=`date --date=-1day +%Y%m%d`
+#STARTTIME=`date --date=-1day +%F`T00:00:00
+#ENDTIME=`date +%F`T00:00:00
+ISODATE=${YEAR}${MONTH}${DAY}
+STARTTIME="${YEAR}-${MONTH}-${DAY}T00:00:00"
+ENDTIME="${YEAR}-${MONTH}-${DAY}T23:59:59"
+#echo ISODATE=\"$ISODATE\"
+#echo STARTTIME=\"$STARTTIME\"
+#echo ENDTIME=\"$ENDTIME\"
 
 HOST="https://api.eagle.io/api/v1/nodes"
 COUNT=0

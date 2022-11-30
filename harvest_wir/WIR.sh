@@ -24,9 +24,6 @@ mk_std_time () {
 CWD=`pwd`
 
 SRCHDATE="${YEAR}/${MONTH}/${DAY}"
-#SRCHDATE=`echo ${TODAY} | cut -c7-8`
-#SRCHDATE="$SRCHDATE/`echo ${TODAY} | cut -c5-6`"
-#SRCHDATE="$SRCHDATE/`echo ${TODAY} | cut -c1-4`"
 IGNORE='"", 255,"", 255,"", 255,"", 255,"", 255,"", 255,"", 255'
 
 for WHICH in 6163414 6163441 6163948 6163949 6163950 6163951 6164394 6164648 6164677 6164685 ; do
@@ -38,11 +35,41 @@ for WHICH in 6163414 6163441 6163948 6163949 6163950 6163951 6164394 6164648 616
   unzip ../tmpx$$_db5.zip >& /dev/null
 
   if [ `ls -l *.csv | wc -l` -eq 1 ] ; then
+#   if [ ! -d ${CWD}/${DATADIR}/dbca_${WHICH} ] ; then
+#     mkdir -p ${CWD}/${DATADIR}/dbca_${WHICH}
+#   fi
+
+    for file in *.csv ; do
+#     if [ ! -f ${CWD}/${DATADIR}/dbca_${WHICH}/${TODAY}.csv ] ; then
+#       line=`head -4 $file`
+#       echo $line > ${CWD}/${DATADIR}/dbca_${WHICH}/${TODAY}.csv
+#     else
+#       LX=`tail -1 ${CWD}/${DATADIR}/dbca_${WHICH}/${TODAY}.csv | cut -f1 -d,`
+#       LT=`date --date="$LX" +%Y%m%d%H%M%S`
+#     fi
+#     if [ "$LT" = "" ] ; then
+#       LT="0"
+#     fi
+#     if [ $LT -lt $MYSTART ] ; then
+#       LT=$MYSTART
+#     fi
+
+      # extract only those lines for "today" and feed them into the while loop
+      grep "$SRCHDATE" $file | while read line ; do
+        TIME=`echo $line | cut -f1 -d,`
+
+        LTIME=`mk_std_time "$TIME"`
+        LX=`date --date="$LTIME" +%Y%m%d%H%M%S`
+
+        if [ $LX -ge $LT ] ; then
+          VALS=`echo $line | cut -f2- -d, | tr -d '\r'`
+          if [ "$VALS" != "$IGNORE" ] ; then
+
+      ### only create dir and header if there is actually data to add
     if [ ! -d ${CWD}/${DATADIR}/dbca_${WHICH} ] ; then
       mkdir -p ${CWD}/${DATADIR}/dbca_${WHICH}
     fi
 
-    for file in *.csv ; do
       if [ ! -f ${CWD}/${DATADIR}/dbca_${WHICH}/${TODAY}.csv ] ; then
         line=`head -4 $file`
         echo $line > ${CWD}/${DATADIR}/dbca_${WHICH}/${TODAY}.csv
@@ -56,17 +83,8 @@ for WHICH in 6163414 6163441 6163948 6163949 6163950 6163951 6164394 6164648 616
       if [ $LT -lt $MYSTART ] ; then
         LT=$MYSTART
       fi
+      ### to here
 
-      # extract only those lines for "today" and feed them into the while loop
-      grep "$SRCHDATE" $file | while read line ; do
-        TIME=`echo $line | cut -f1 -d,`
-
-        LTIME=`mk_std_time "$TIME"`
-        LX=`date --date="$LTIME" +%Y%m%d%H%M%S`
-
-        if [ $LX -ge $LT ] ; then
-          VALS=`echo $line | cut -f2- -d, | tr -d '\r'`
-          if [ "$VALS" != "$IGNORE" ] ; then
             echo ${LTIME},${VALS} >> ${CWD}/${DATADIR}/dbca_${WHICH}/${TODAY}.csv
           fi
         fi

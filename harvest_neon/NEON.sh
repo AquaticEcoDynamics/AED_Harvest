@@ -5,16 +5,20 @@
 
 NEON_SERVER="https://restservice-neon.unidata.com.au:443/NeonRESTService.svc"
 
-TMPPRE="/tmp/tmpx_$$_"
+TMPPRE="/tmp/tmpx$$_"
 TOKTMP=${TMPPRE}AToken
 NODTMP=${TMPPRE}NodeList
 CHNTMP=${TMPPRE}ChannelList
-TIME=`date +%H:%M:00`
-STARTTIME=`date --date=-24hours +%F`T${TIME}
-ENDTIME=`date +%F`T${TIME}
-ISODATE=`date +%Y%m%d`
+
+#TIME=`date +%H:%M:00`
+#STARTTIME=`date --date=-24hours +%F`T${TIME}
+#ENDTIME=`date +%F`T${TIME}
+STARTTIME=`date --date=${YYEAR}-${YMONTH}-${YDAY} +%F`T00:00:00
+ENDTIME=`date --date=${TYEAR}-${TMONTH}-${TDAY} +%F`T:00:00:00
+#ISODATE=`date +%Y%m%d`
 COUNT=0
 DATADIR="data/${YEAR}/harvest_neon"
+echo STARTTIME \"$STARTTIME\" ENDTIME \"$ENDTIME\"
 
 #------------------------------------------------------------------------------#
 make_csv() {
@@ -32,7 +36,6 @@ append_csv() {
    else
      LINE=Time,$1
    fi
-   echo $LINE > x_$2
    while read LINE ; do
      TIME=`echo $LINE | cut -f4 -d\" | tr -d '-' | tr -d ':' | tr -d 'T'`
      VALU=`echo $LINE | cut -f8 -d\"`
@@ -51,12 +54,17 @@ append_csv() {
        done
      fi
      LINE=${LINE},$VALU
+     if [ ! -f x_$2 ] ; then
+       echo $LINE > x_$2
+     fi
      echo $LINE >> x_$2
    done
-   if [ -f $2 ] ; then
-     /bin/rm $2
+   if [ -f x_$2 ] ; then
+     if [ -f $2 ] ; then
+       /bin/rm $2
+     fi
+     /bin/mv x_$2 $2
    fi
-   /bin/mv x_$2 $2
 }
 
 #------------------------------------------------------------------------------#
@@ -92,10 +100,12 @@ show_nodes() {
        cat ${CHNTMP} | cut -f2 -d\[ | cut -f1 -d] | sed -e 's/},{/}\n{/g' | show_channels ${NodeNam} tmpx_${NodeNam}_$$.csv
        /bin/rm ${CHNTMP}
 
-       if [ ! -d ${DATADIR}/neon_${NodeNam} ] ; then
-          mkdir -p ${DATADIR}/neon_${NodeNam}
+       if [ -f tmpx_${NodeNam}_$$.csv ] ; then
+         if [ ! -d ${DATADIR}/neon_${NodeNam} ] ; then
+           mkdir -p ${DATADIR}/neon_${NodeNam}
+         fi
+         /bin/mv tmpx_${NodeNam}_$$.csv ${DATADIR}/neon_${NodeNam}/${ISODATE}.csv
        fi
-       /bin/mv tmpx_${NodeNam}_$$.csv ${DATADIR}/neon_${NodeNam}/${ISODATE}.csv
    done
 }
 

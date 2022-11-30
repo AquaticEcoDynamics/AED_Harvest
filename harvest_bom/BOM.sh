@@ -46,9 +46,7 @@ makeiso () {
 
 
 SRCHDATE="${DAY}/${MONTH}/${YEAR}"
-
 ARCHIVEF="${DATADIR}/${TODAY}.csv"
-/bin/mkdir -p "${DATADIR}"
 
 if [ -f $ARCHIVEF ] ; then
   # if file exists, get the last line and decode its date entry
@@ -94,6 +92,9 @@ do
         # echo Adding "$DATE,$TIDE"
           DATE=`to_std_time_fmt $ISODATE`
           if [ ! -f $ARCHIVEF ] ; then
+            if [ ! -d ${DATADIR} ] ; then
+              /bin/mkdir -p "${DATADIR}"
+            fi
             echo "date,tide" > $ARCHIVEF
           fi
           echo "$DATE,$TIDE" >> $ARCHIVEF
