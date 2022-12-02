@@ -18,7 +18,7 @@ ENDTIME=`date --date=${TYEAR}-${TMONTH}-${TDAY} +%F`T:00:00:00
 #ISODATE=`date +%Y%m%d`
 COUNT=0
 DATADIR="data/${YEAR}/harvest_neon"
-echo STARTTIME \"$STARTTIME\" ENDTIME \"$ENDTIME\"
+#echo STARTTIME \"$STARTTIME\" ENDTIME \"$ENDTIME\"
 
 #------------------------------------------------------------------------------#
 make_csv() {
@@ -31,13 +31,15 @@ make_csv() {
 #------------------------------------------------------------------------------#
 append_csv() {
    if [ -f $2 ] ; then
-     LINE=`head -1 $2`
-     LINE=${LINE},$1
+     HEAD=`head -1 $2`
+     HEAD=${HEAD},$1
    else
-     LINE=Time,$1
+     HEAD=Time,$1
    fi
+
    while read LINE ; do
-     TIME=`echo $LINE | cut -f4 -d\" | tr -d '-' | tr -d ':' | tr -d 'T'`
+     TIME=`echo $LINE | cut -f4 -d\" | tr -d ' '`
+
      VALU=`echo $LINE | cut -f8 -d\"`
 #    echo $TIME $VALU
      if [ -f $2 ] ; then
@@ -55,7 +57,7 @@ append_csv() {
      fi
      LINE=${LINE},$VALU
      if [ ! -f x_$2 ] ; then
-       echo $LINE > x_$2
+       echo $HEAD > x_$2
      fi
      echo $LINE >> x_$2
    done
@@ -70,19 +72,39 @@ append_csv() {
 #------------------------------------------------------------------------------#
 show_channels() {
    OUTFILE=$2
-   FTCHFILE=${TMPPRE}${ChanName}
    while read LINE ; do
      COUNT=0
-     ChanID=`echo $LINE | cut -f2 -d: | cut -f1 -d,`
-     ChanNam=`echo $LINE | cut -f3 -d: | cut -f1 -d, | tr ' ' '_' | tr '\/' '-' | tr -d '\"'`
-#    echo CHANNEL $ChanID   CALLED $ChanNam
+#echo $LINE
+#     ChanID=`echo $LINE | cut -f2 -d: | cut -f1 -d,`
+#     ChanNam=`echo $LINE | cut -f3 -d: | cut -f1 -d, | tr ' ' '_' | tr '\/' '-' | tr -d '\"'`
 
-     wget -q -O "${FTCHFILE}" --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetData/${ChanID}?StartTime=${STARTTIME}&EndTime=${ENDTIME}" > /dev/null 2>&1
+      CLEANED=`echo $LINE | tr -d '"' | tr -d '{' | tr -d '}'`
+      ChanID=`echo $CLEANED | tr ',' '\n' | grep -w 'ID' | cut -f2 -d:`
+      ChanNam=`echo $CLEANED | tr ',' '\n' | grep -w 'Name' | cut -f2 -d: | tr ' ' '_' | tr '\/' '-'`
+      FirstTime=`echo $CLEANED | tr ',' '\n' | grep 'FirstTime' | cut -f2 -d:`
+      LastTime=`echo $CLEANED | tr ',' '\n' | grep 'LastTime' | cut -f2 -d:`
 
-#    mkdir -p $1/${ChanNam} >/dev/null 2>&1
-#    cat ${FTCHFILE} | cut -f2 -d\[ | cut -f1 -d] | sed -e 's/},{/}\n{/g' | make_csv "$1/${ChanNam}/${ISODATE}.csv"
+## It's probably worth checking FirstTime and LastTime against the requested times
+## also, for now at least, it seems if the sensor has stopped working (ie LastTime is a while ago) 
+## it doesnt respond, even to requests for historical data.
 
-     cat ${FTCHFILE} | cut -f2 -d\[ | cut -f1 -d] | sed -e 's/},{/}\n{/g' | append_csv ${ChanNam} "${OUTFILE}"
+#    echo CHANNEL $ChanID   CALLED \"$ChanNam\" FirstTime $FirstTime LastTime $LastTime
+
+     FTCHFILE=${TMPPRE}${ChanID}
+
+#echo "wget -q -O \"${FTCHFILE}\" --header=\"X-Authentication-Token:${LoginToken}\" \"${NEON_SERVER}/GetData/${ChanID}?StartTime=${STARTTIME}&EndTime=${ENDTIME}\""
+
+     wget -q -O "${FTCHFILE}" --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetData/${ChanID}?StartTime=${STARTTIME}&EndTime=${ENDTIME}"
+
+     if [ $? -eq 0 ] ; then
+       cat "${FTCHFILE}" | cut -f2 -d\[ | cut -f1 -d] | sed -e 's/},{/}\n{/g' | append_csv "${ChanNam}" "${OUTFILE}"
+#    else
+#      echo failed to fetch \( $? \)
+     fi
+
+     if [ -f "${FTCHFILE}" ] ; then
+       /bin/rm "${FTCHFILE}"
+     fi
 
      COUNT=$((COUNT+1))
    done
@@ -95,10 +117,16 @@ show_nodes() {
        NodeNam=`echo ${LINE} | cut -f3 -d: | cut -f1 -d, | tr ' ' '_' | tr -d '\"'`
    #   echo NodeID ${NodeID} Called ${NodeNam} has the following channels :
 
-       wget -q -O ${CHNTMP} --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetChannelList/${NodeID}?ShowInactive=false" > /dev/null 1>&1
+# echo  "wget -q -O ${CHNTMP} --header=\"X-Authentication-Token:${LoginToken}\" \"${NEON_SERVER}/GetChannelList/${NodeID}?ShowInactive=false\""
+       wget -q -O ${CHNTMP} "--header=X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetChannelList/${NodeID}?ShowInactive=false"
 
-       cat ${CHNTMP} | cut -f2 -d\[ | cut -f1 -d] | sed -e 's/},{/}\n{/g' | show_channels ${NodeNam} tmpx_${NodeNam}_$$.csv
-       /bin/rm ${CHNTMP}
+       if [ $? -eq 0 ] ; then
+         cat ${CHNTMP} | cut -f2 -d\[ | cut -f1 -d] | sed -e 's/},{/}\n{/g' | show_channels ${NodeNam} tmpx_${NodeNam}_$$.csv
+         /bin/rm ${CHNTMP}
+       else
+         echo failed to get channel list for node ${NodeNam}
+       fi
+return
 
        if [ -f tmpx_${NodeNam}_$$.csv ] ; then
          if [ ! -d ${DATADIR}/neon_${NodeNam} ] ; then
@@ -121,7 +149,7 @@ LoginToken=`cat ${TOKTMP} | cut -f2 -d: | tr -d '\"' | tr -d '}' | tr -d '\\\'`
 /bin/rm ${TOKTMP}
 
 #echo wget -q -O ${NODTMP} --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetNodeList"
-wget -q -O ${NODTMP} --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetNodeList" > /dev/null 2>&1
+wget -q -O ${NODTMP} --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetNodeList"
 
 cat ${NODTMP} | cut -f2 -d\[ | cut -f1 -d] | sed -e 's/},{/}\n{/g' | show_nodes
 /bin/rm ${NODTMP}
