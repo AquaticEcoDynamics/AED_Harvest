@@ -22,7 +22,7 @@ done
 if [ "$TODAY" != "" ] ; then
   Y=`echo $TODAY | cut -f1 -d-`
   if [ "$Y" = "$TODAY" ] ; then
-    echo when asking for a specific date, please use \"--today YYYY-MM-DD\"
+    echo when asking for a specific date, please use \"--today YYYY-mm-dd\"
     exit 1
   fi
 # M=`echo $TODAY | cut -f2 -d-`
@@ -40,6 +40,15 @@ echo BACKTIME is \"$BACKTIME\"
     sleep 1
     echo harvest_bom kent
     ./harvest_bom/BOM.sh $BACKTIME --site kent
+    sleep 1
+    echo harvest_bom lake alexandrina
+    ./harvest_bom/BOM.sh $BACKTIME --site alex
+    sleep 1
+    echo harvest_bom river murray lock 1
+    ./harvest_bom/BOM.sh $BACKTIME --site murray1
+    sleep 1
+    echo harvest_bom river murray lock 6
+    ./harvest_bom/BOM.sh $BACKTIME --site murray6
 
     echo harvest_bom_tide
     ./harvest_bom_tide/BOM_tide.sh $BACKTIME
@@ -75,5 +84,11 @@ echo BACKTIME is \"$BACKTIME\"
     ./harvest_mdba/MDBA.sh $BACKTIME --site Alexandrina
     ./harvest_mdba/MDBA.sh $BACKTIME --site "Lock 1 Upstream"
     ./harvest_mdba/MDBA.sh $BACKTIME --site "Lock 1 Downstream"
+
+    if [ "$BACKTIME" = "" ] ; then
+      BACKTIME="--today `date +%Y-%m-%d --date=-1day`"
+    fi
+    echo harvest_dew $BACKTIME
+    ./harvest_dew/DEW.sh $BACKTIME
 
 exit 0

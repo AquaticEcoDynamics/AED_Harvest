@@ -90,18 +90,20 @@ sys_nodes=( '5c47e71ae4b0944321ed8039'  \
 append_csv() {
    SRCFILE=$2
    if [ -f ${SRCFILE} ] ; then
-     LINE=`head -1 ${SRCFILE}`
-     LINE=${LINE},\"$1\"
+     HEAD=`head -1 ${SRCFILE}`
+     HEAD=${HEAD},\"$1\"
    else
-     LINE=Time,\"$1\"
+     HEAD=Time,\"$1\"
    fi
-   echo $LINE > x_${SRCFILE}
+   echo $HEAD > x_${SRCFILE}
+
    while read LINE ; do
       tag=`echo $LINE | cut -f2 -d\"`
       if [ "$tag" = "data" ] ; then
          break
       fi
    done
+
    while read LINE ; do
      tag=`echo ${LINE} | cut -f2 -d\"`
      if [ "$tag" = "ts" ] ; then
@@ -134,17 +136,11 @@ append_csv() {
 
 #------------------------------------------------------------------------------#
 OUTFILE=me.csv
-
 DATADIR="data/${YEAR}/harvest_matilda/"
-if [ ! -d ${DATADIR} ] ; then
-   mkdir -p ${DATADIR}
-fi
-for dir in uwa_met_matilda uwa_wq_matilda uwa_sys_matilda ; do
-   if [ ! -d ${DATADIR}/$dir ] ; then
-      mkdir -p ${DATADIR}/$dir
-   fi
-done
 
+
+#------------------------------------------------------------------------------
+#  Do met
 COUNT=0
 
 for node in ${met_nodes[*]} ; do
@@ -161,15 +157,28 @@ for node in ${met_nodes[*]} ; do
 #  echo "===================" >> xx
 
    cat ${FILETMP}_${node} | append_csv "$NAME" "${OUTFILE}"
-
-#  cat ${OUTFILE} >> xx
-
    /bin/rm ${FILETMP}_${node}
    COUNT=$((COUNT+1))
 done
 
-/bin/mv ${OUTFILE} ${DATADIR}/uwa_met_matilda/${ISODATE}.csv
+LC=`wc -l ${OUTFILE} | cut -f1 -d\ `
+if [ "$LC" = "" ] ; then
+  LC=0
+fi
+if [ $LC -gt 1 ] ; then
+   dir=uwa_met_matilda
+   if [ ! -d ${DATADIR}/$dir ] ; then
+      mkdir -p ${DATADIR}/$dir
+   fi
 
+  /bin/mv ${OUTFILE} ${DATADIR}/$dir/${ISODATE}.csv
+else
+  /bin/rm ${OUTFILE}
+fi
+
+
+#------------------------------------------------------------------------------
+# Do wq
 COUNT=0
 
 for node in ${wq_nodes[*]} ; do
@@ -179,14 +188,32 @@ for node in ${wq_nodes[*]} ; do
    wget -O ${FILETMP}_${node} -q --header="X-Api-Key:${api_key}" ${URL}
 
    NAME=`grep -w name ${FILETMP}_${node} | cut -f2 -d: | cut -f2 -d\"`
+
 #  echo name is \"$NAME\"
+
    cat ${FILETMP}_${node} | append_csv "$NAME" "${OUTFILE}"
    /bin/rm ${FILETMP}_${node}
    COUNT=$((COUNT+1))
 done
 
-/bin/mv ${OUTFILE} ${DATADIR}/uwa_wq_matilda/${ISODATE}.csv
+LC=`wc -l ${OUTFILE} | cut -f1 -d\ `
+if [ "$LC" = "" ] ; then
+  LC=0
+fi
+if [ $LC -gt 1 ] ; then
+   dir=uwa_wq_matilda
+   if [ ! -d ${DATADIR}/$dir ] ; then
+      mkdir -p ${DATADIR}/$dir
+   fi
 
+  /bin/mv ${OUTFILE} ${DATADIR}/$dir/${ISODATE}.csv
+else
+  /bin/rm ${OUTFILE}
+fi
+
+
+#------------------------------------------------------------------------------
+# Do sys
 COUNT=0
 
 for node in ${sys_nodes[*]} ; do
@@ -196,13 +223,30 @@ for node in ${sys_nodes[*]} ; do
    wget -O ${FILETMP}_${node} -q --header="X-Api-Key:${api_key}" ${URL}
 
    NAME=`grep -w name ${FILETMP}_${node} | cut -f2 -d: | cut -f2 -d\"`
+
 #  echo name is \"$NAME\"
+
    cat ${FILETMP}_${node} | append_csv "$NAME" "${OUTFILE}"
    /bin/rm ${FILETMP}_${node}
    COUNT=$((COUNT+1))
 done
 
-/bin/mv ${OUTFILE} ${DATADIR}/uwa_sys_matilda/${ISODATE}.csv
+LC=`wc -l ${OUTFILE} | cut -f1 -d\ `
+if [ "$LC" = "" ] ; then
+  LC=0
+fi
+if [ $LC -gt 1 ] ; then
+   dir=uwa_sys_matilda
+   if [ ! -d ${DATADIR}/$dir ] ; then
+      mkdir -p ${DATADIR}/$dir
+   fi
+
+  /bin/mv ${OUTFILE} ${DATADIR}/$dir/${ISODATE}.csv
+else
+  /bin/rm ${OUTFILE}
+fi
+
+#------------------------------------------------------------------------------
 
 . ./common/finish.sh
 

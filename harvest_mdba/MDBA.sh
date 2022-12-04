@@ -29,21 +29,28 @@ SITENAME=`echo $SITENAME | tr ' ' '-' | tr [A-Z] [a-z]`
 #echo site now $SITENAME
 DATADIR="data/${YEAR}/harvest_mdba/${SITENAME}/"
 
-#echo fetch \"https://riverdata.mdba.gov.au/sites/default/files/liveriverdata/csv/${sitefile}.csv\"
-curl -X GET https://riverdata.mdba.gov.au/sites/default/files/liveriverdata/csv/${sitefile}.csv -s -o ${TMPFILE}
+BASEWSITE="https://riverdata.mdba.gov.au/sites/default/files/liveriverdata/csv/"
 
+#echo fetch \"https://riverdata.mdba.gov.au/sites/default/files/liveriverdata/csv/${sitefile}.csv\"
+curl -X GET ${BASEWSITE}${sitefile}.csv -s -o ${TMPFILE}
+
+
+#------- to_mdba_time_fmt -------------------------------------
 to_mdba_time_fmt () {
   # Takes one argument a date/time in YYYYmmddHHMMSS format and produces "YYYY-mm-dd HH:MM"
   echo "`echo $1 | cut -c7-8`/`echo $1 | cut -c5-6`/`echo $1 | cut -c1-4`"
 }
+#--------------------------------------------------------------
 
 SEARCH="`to_mdba_time_fmt $TODAY`"
 #echo  search for \"$SEARCH\"
 VALUE=`grep $SEARCH  ${TMPFILE} | cut -f2 -d,`
 
+#echo SEARCH=$SEARCH VALUE=$VALUE
+
 if [ "$VALUE" = "" ] ; then
   /bin/rm ${TMPFILE}
-  curl -X GET https://riverdata.mdba.gov.au/sites/default/files/liveriverdata/csv/${sitefile}_historical.csv -s -o ${TMPFILE}
+  curl -X GET ${BASEWSITE}${sitefile}_historical.csv -s -o ${TMPFILE}
   VALUE=`grep $SEARCH  ${TMPFILE} | cut -f2 -d,`
   if [ "$VALUE" = "" ] ; then
     # no data for this date
@@ -67,7 +74,7 @@ if [ ! -f "${DATADIR}/${ISODATE}.csv" ] ; then
   echo "${LTIME},${VALUE}" >> ${DATADIR}/${ISODATE}.csv
 fi
 
-/bin/rm ${TMPFILE}
+#/bin/rm ${TMPFILE}
 
 . ./common/finish.sh
 

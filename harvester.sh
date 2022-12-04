@@ -23,6 +23,8 @@ LWN_NEXT=0
 LWN_WAIT=12hours
 MDBANEXT=0
 MDBAWAIT=12hours
+DEW_NEXT=0
+DEW_WAIT=1day
 
 
 # Use $RANDOM. It's often useful in combination with simple shell
@@ -44,6 +46,12 @@ while `true` ; do
     ./harvest_bom/BOM.sh --site "meadow"
     sleep 1
     ./harvest_bom/BOM.sh --site "kent"
+    sleep 1
+    ./harvest_bom/BOM.sh --site alex
+    sleep 1
+    ./harvest_bom/BOM.sh --site murray1
+    sleep 1
+    ./harvest_bom/BOM.sh --site murray6
 
     BOM_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $BOM_WAIT"`
 #   echo next BOM at $BOM_NEXT
@@ -107,6 +115,12 @@ while `true` ; do
     ./harvest_mdba/MDBA.sh --site "Lock 1 Downstream"
     MDBANEXT=`date +%Y%m%d%H%M --date="$TODAY + $MDBAWAIT"`
 #   echo next MDBA at $MDBANEXT
+  fi
+
+  if [ $NOW -ge $DEW_NEXT ] ; then
+    ./harvest_dew/DEW.sh --today="`date +%Y-%m-%d --date=-1day"`
+    DEW_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $DEW_WAIT"`
+#   echo next DEW at $DEW_NEXT
   fi
 
   # sleep for a random time between 1 and 3 mins

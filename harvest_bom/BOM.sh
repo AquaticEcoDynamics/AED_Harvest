@@ -17,6 +17,18 @@ case $SITENAME in
      URL="http://www.bom.gov.au/fwo/IDW62404/IDW62404.509484.tbl.shtml"
      COLLECT=kent
      ;;
+  "murray1")   # River Murray Upstream Lock 1
+     URL="http://www.bom.gov.au/fwo/IDS60253/IDS60253.524504.tbl.shtml"
+     COLLECT=murray1
+     ;;
+  "murray6")   # River Murray Upstream Lock 6
+     URL="http://www.bom.gov.au/fwo/IDS60253/IDS60253.524038.tbl.shtml"
+     COLLECT=murray6
+     ;;
+  "alex")      # Lake Alexandrina
+     URL="http://www.bom.gov.au/fwo/IDS60253/IDS60253.524535.tbl.shtml"
+     COLLECT=alex
+     ;;
    *) # none?
      exit 0
      ;;
@@ -26,7 +38,7 @@ DATADIR="data/${YEAR}/harvest_bom/${COLLECT}"
 
 FILE=/tmp/tmpx$$
 
-# a small subroutine to convert date data from "DD/MM/YYY HH:mm" to
+# a small subroutine to convert date data from "dd/mm/YYYY HH:MM" to
 # isodate format (YYYYMMDDHHmm) for easy comparison
 #
 # NB: remember to call with date in quotes
@@ -44,6 +56,22 @@ makeiso () {
   echo ${year}${mnth}${day}${hour}${min}
 }
 
+# a small subroutine to convert date data from "YYYY-mm-dd HH:MM" to
+# isodate format (YYYYMMDDHHmm) for easy comparison
+makeiso2 () {
+  date=`echo $1 | cut -f1 -d\ `
+  time=`echo $1 | cut -f2 -d\ `
+
+  year=`echo $date | cut -f1 -d-`
+  mnth=`echo $date | cut -f2 -d-`
+  day=`echo $date | cut -f3 -d-`
+
+  hour=`echo $time | cut -f1 -d:`
+  min=`echo $time | cut -f2 -d:`
+
+  echo ${year}${mnth}${day}${hour}${min}
+}
+
 
 SRCHDATE="${DAY}/${MONTH}/${YEAR}"
 ARCHIVEF="${DATADIR}/${TODAY}.csv"
@@ -51,8 +79,8 @@ ARCHIVEF="${DATADIR}/${TODAY}.csv"
 if [ -f $ARCHIVEF ] ; then
   # if file exists, get the last line and decode its date entry
   LAST=`tail -1 $ARCHIVEF | cut -f1 -d,`
-# echo LAST = $LAST
-  LASTENTRY=`makeiso "$LAST"`
+# echo ARCHIVEF=$ARCHIVEF LAST=$LAST
+  LASTENTRY=`makeiso2 "$LAST"`
 else
   LASTENTRY=000000000000
 fi
@@ -87,6 +115,7 @@ do
 
         # date format is : 24/11/2021 08:31
         ISODATE=`makeiso "$DATE"`
+#       echo DATE=$DATE ISODATE=$ISODATE LASTENTRY=$LASTENTRY
 
         if [ $ISODATE -gt $LASTENTRY ] ; then
         # echo Adding "$DATE,$TIDE"
