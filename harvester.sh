@@ -118,7 +118,7 @@ while `true` ; do
   fi
 
   if [ $NOW -ge $DEW_NEXT ] ; then
-    ./harvest_dew/DEW.sh --today="`date +%Y-%m-%d --date=-1day"`
+    ./harvest_dew/DEW.sh
     DEW_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $DEW_WAIT"`
 #   echo next DEW at $DEW_NEXT
   fi

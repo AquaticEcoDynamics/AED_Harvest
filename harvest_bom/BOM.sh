@@ -104,6 +104,7 @@ do
       if [ $? -eq 0 ] ; then
         DATE=`echo $line | cut -f2 -d\> | cut -f1 -d\<`
         TD=`echo $DATE | cut -f1 -d\ `
+        log_last_data "$DATE"
       fi
       read line
       if [ $? -eq 0 ] ; then
@@ -127,6 +128,7 @@ do
             echo "date,tide" > $ARCHIVEF
           fi
           echo "$DATE,$TIDE" >> $ARCHIVEF
+          log_last_update
         fi
       fi
     fi

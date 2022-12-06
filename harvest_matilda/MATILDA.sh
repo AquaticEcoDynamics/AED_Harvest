@@ -117,6 +117,7 @@ append_csv() {
        fi
        if [ "$LINE" = "" ] ; then
          LINE=$TIME
+         log_last_data "$TIME"
          TC=0
          while [ $TC -lt $COUNT ] ; do
             LINE=${LINE},
@@ -125,6 +126,7 @@ append_csv() {
        fi
        LINE=${LINE},$VALU
        echo $LINE >> x_${SRCFILE}
+       log_last_update
      fi
    done
 

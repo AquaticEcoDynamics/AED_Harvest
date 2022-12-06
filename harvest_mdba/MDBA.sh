@@ -72,9 +72,10 @@ fi
 if [ ! -f "${DATADIR}/${ISODATE}.csv" ] ; then
   echo "Time,Value" > ${DATADIR}/${ISODATE}.csv
   echo "${LTIME},${VALUE}" >> ${DATADIR}/${ISODATE}.csv
+  log_last_update
 fi
 
-#/bin/rm ${TMPFILE}
+/bin/rm ${TMPFILE}
 
 . ./common/finish.sh
 

@@ -2,7 +2,11 @@
 # common/start.sh
 #
 
+BASENAME=`dirname $0`
+BASENAME=`basename $BASENAME`
+
 TODAY=""
+SITENAME=""
 DEBUG=false
 while [ $# -gt 0 ] ; do
   case $1 in
@@ -23,21 +27,43 @@ while [ $# -gt 0 ] ; do
   shift
 done
 
+if [ "$SITENAME" != "" ] ; then
+  BASENAME="${BASENAME}_${SITENAME}"
+fi
+BASENAME=`echo $BASENAME | tr ' ' '-' | tr [A-Z] [a-z]`
+
+LOGDIR="data/log/${BASENAME}"
+TMPLOGDIR="/tmp/log_$$/${BASENAME}"
+if [ ! -d "$LOGDIR" ] ; then
+  mkdir -p "$LOGDIR"
+fi
+
 # echo today supplied is $TODAY
 
 if [ "$TODAY" = "" ] ; then
   # Start with "today"
-  TODAY=`date +%Y%m%d`
+  TODAY=`date +"%Y%m%d"`
+  LOGTODAY=`date +"%Y%m%d%H%M"`
 else
   T1=$TODAY
-  TODAY=`date --date="$TODAY" +%Y%m%d`
+  TODAY=`date --date="$TODAY" +"%Y%m%d"`
   if [ $? != 0 ] ; then
     echo cannot use supplied date \"$T1\"
     exit 1
   fi
+  LOGTODAY=`date --date="$T1" +"%Y%m%d%H%M"`
 fi
 
 # echo today is $TODAY
+
+LOGNOW=`date +"%Y%m%d%H%M"`
+date +"%Y-%m-%d %H:%M" > "${LOGDIR}/last_run"
+
+mkdir -p ${TMPLOGDIR}
+if [ $? -ne 0 ] ; then
+  echo failed to make tmp log dir \"$TMPLOGDIR\"
+exit
+fi
 
 ###== build some time related values based on "TODAY"
 
@@ -80,3 +106,10 @@ to_std_time_fmt () {
   echo "`echo $1 | cut -c1-4`-`echo $1 | cut -c5-6`-`echo $1 | cut -c7-8` `echo $1 | cut -c9-10`:`echo $1 | cut -c11-12`"
 }
 
+log_last_data () {
+    echo "$1" > "${TMPLOGDIR}/last_data"
+}
+
+log_last_update () {
+    date +"%Y-%m-%d %H:%M" > "${TMPLOGDIR}/last_update"
+}

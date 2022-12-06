@@ -207,6 +207,8 @@ echo -n "$SOLARTOT,"                        >> ${OUTFILE}
 echo -n "$WHEIGHT,$WSPMAX,$WSPMDIR," >> ${OUTFILE}
 echo    "$WSPAVG,$WSPADIR"         >> ${OUTFILE}
 
+   log_last_update
+
 }
 #------------------------------------------------------------------------------#
 

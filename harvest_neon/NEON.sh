@@ -66,6 +66,7 @@ append_csv() {
        /bin/rm $2
      fi
      /bin/mv x_$2 $2
+     log_last_update
    fi
 }
 

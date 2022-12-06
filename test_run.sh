@@ -30,7 +30,7 @@ if [ "$TODAY" != "" ] ; then
   BACKTIME="--today $TODAY"
 fi
 
-echo BACKTIME is \"$BACKTIME\"
+#echo BACKTIME is \"$BACKTIME\"
 
     echo harvest_bom barrack
     ./harvest_bom/BOM.sh $BACKTIME --site barrack
@@ -64,9 +64,6 @@ echo BACKTIME is \"$BACKTIME\"
     echo harvest_dot mozzie
     ./harvest_dot/DOT.sh $BACKTIME --site mozzie
 
-    echo harvest_wir
-    ./harvest_wir/WIR.sh $BACKTIME
-
     echo harvest_neon
     ./harvest_neon/NEON.sh $BACKTIME
 
@@ -85,10 +82,13 @@ echo BACKTIME is \"$BACKTIME\"
     ./harvest_mdba/MDBA.sh $BACKTIME --site "Lock 1 Upstream"
     ./harvest_mdba/MDBA.sh $BACKTIME --site "Lock 1 Downstream"
 
-    if [ "$BACKTIME" = "" ] ; then
-      BACKTIME="--today `date +%Y-%m-%d --date=-1day`"
-    fi
+#   if [ "$BACKTIME" = "" ] ; then
+#     BACKTIME="--today `date +%Y-%m-%d --date=-1day`"
+#   fi
     echo harvest_dew $BACKTIME
     ./harvest_dew/DEW.sh $BACKTIME
+
+    echo harvest_wir $BACKTIME
+    ./harvest_wir/WIR.sh $BACKTIME
 
 exit 0
