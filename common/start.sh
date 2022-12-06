@@ -33,7 +33,7 @@ fi
 BASENAME=`echo $BASENAME | tr ' ' '-' | tr [A-Z] [a-z]`
 
 LOGDIR="data/log/${BASENAME}"
-TMPLOGDIR="/tmp/log_$$/${BASENAME}"
+TMPLOGDIR="/tmp/log_$$"
 if [ ! -d "$LOGDIR" ] ; then
   mkdir -p "$LOGDIR"
 fi

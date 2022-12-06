@@ -4,17 +4,22 @@
 #
 . ./common/start.sh
 
-DATADIR="data/${YEAR}/harvest_dew/barrage"
-
 FILE=/tmp/tmpx$$
 
-# Curiously, asking for 100days of data returns way more - all the way back to 2011
+SITECODE=A4261002
+UNIT_ID=241
+
+
+DATADIR="data/${YEAR}/harvest_dew/${SITECODE}"
+
 BASESITE="https://water.data.sa.gov.au/Export/BulkExport?"
+
+# Curiously, asking for 100days of data returns way more - all the way back to 2011
 #QUERY="DateRange=Days7"
 #QUERY="DateRange=Days100"
 QUERY="DateRange=Custom"
 QUERY=${QUERY}"&StartTime=${YYEAR}-${YMONTH}-${YDAY}%2000%3A00"
-QUERY=${QUERY}"&EndTime=${TYEAR}-${TMONTH}-${TDAY}%2000%3A00"
+QUERY=${QUERY}"&EndTime=${TYEAR}-${TMONTH}-${TDAY}%2023%3A59"
 QUERY=${QUERY}"&TimeZone=9.5"
 QUERY=${QUERY}"&Calendar=CALENDARYEAR"
 #QUERY=${QUERY}"&Interval=Daily"
@@ -25,13 +30,14 @@ QUERY=${QUERY}"&RoundData=False"
 QUERY=${QUERY}"&IncludeGradeCodes=False"
 QUERY=${QUERY}"&IncludeApprovalLevels=False"
 QUERY=${QUERY}"&IncludeInterpolationTypes=False"
-QUERY=${QUERY}"&Datasets[0].DatasetName=Discharge.Total%20barrage%20flow%40A4261002"
+QUERY=${QUERY}"&Datasets[0].DatasetName=Discharge.Total%20barrage%20flow%40${SITECODE}"
 QUERY=${QUERY}"&Datasets[0].Calculation=Aggregate"
-QUERY=${QUERY}"&Datasets[0].UnitId=241"
+QUERY=${QUERY}"&Datasets[0].UnitId=${UNIT_ID}"
 QUERY=${QUERY}"&_=1636421128724"
 URL="${BASESITE}${QUERY}"
 
-echo ${QUERY}
+#echo ${QUERY}
+#echo $URL
 
 # a small subroutine to convert date data from "YYYY-mm-dd HH:MM" to
 # isodate format (YYYYMMDDHHmm) for easy comparison
@@ -58,11 +64,14 @@ ARCHIVEF="${DATADIR}/${TODAY}.csv"
 
 # Fetch the data file
 wget -q $URL --user-agent="" -O $FILE
+#cat $FILE
+#/bin/rm $FILE
+#exit
 
 if [ $? -eq 0 ] ; then
   if [ -f $FILE ] ; then
     grep "^${SRCHDATE}" $FILE | while read LINE ; do
-#echo \"${LINE}\"
+#     echo \"${LINE}\"
       if [ "$LINE" != "" ] ; then
         DATE=`echo $LINE | cut -f1 -d,`
         FLOW=`echo $LINE | cut -f3 -d,` 
