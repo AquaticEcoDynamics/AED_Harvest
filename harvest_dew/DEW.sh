@@ -10,11 +10,15 @@ FILE=/tmp/tmpx$$
 
 # Curiously, asking for 100days of data returns way more - all the way back to 2011
 BASESITE="https://water.data.sa.gov.au/Export/BulkExport?"
-#QUERY="DateRange=Days30"
-QUERY="DateRange=Days100"
+#QUERY="DateRange=Days7"
+#QUERY="DateRange=Days100"
+QUERY="DateRange=Custom"
+QUERY=${QUERY}"&StartTime=${YYEAR}-${YMONTH}-${YDAY}%2000%3A00"
+QUERY=${QUERY}"&EndTime=${TYEAR}-${TMONTH}-${TDAY}%2000%3A00"
 QUERY=${QUERY}"&TimeZone=9.5"
 QUERY=${QUERY}"&Calendar=CALENDARYEAR"
-QUERY=${QUERY}"&Interval=Daily"
+#QUERY=${QUERY}"&Interval=Daily"
+QUERY=${QUERY}"&Interval=Hourly"
 QUERY=${QUERY}"&Step=1&ExportFormat=csv"
 QUERY=${QUERY}"&TimeAligned=True"
 QUERY=${QUERY}"&RoundData=False"
@@ -26,6 +30,8 @@ QUERY=${QUERY}"&Datasets[0].Calculation=Aggregate"
 QUERY=${QUERY}"&Datasets[0].UnitId=241"
 QUERY=${QUERY}"&_=1636421128724"
 URL="${BASESITE}${QUERY}"
+
+echo ${QUERY}
 
 # a small subroutine to convert date data from "YYYY-mm-dd HH:MM" to
 # isodate format (YYYYMMDDHHmm) for easy comparison
@@ -55,17 +61,25 @@ wget -q $URL --user-agent="" -O $FILE
 
 if [ $? -eq 0 ] ; then
   if [ -f $FILE ] ; then
-    LINE=`grep "^${SRCHDATE}" $FILE` 
-    if [ "$LINE" != "" ] ; then
-      FLOW=`echo $LINE | cut -f3 -d,` 
-      if [ ! -d ${DATADIR} ] ; then
-        mkdir -p ${DATADIR}
+    grep "^${SRCHDATE}" $FILE | while read LINE ; do
+#echo \"${LINE}\"
+      if [ "$LINE" != "" ] ; then
+        DATE=`echo $LINE | cut -f1 -d,`
+        FLOW=`echo $LINE | cut -f3 -d,` 
+        if [ $FLOW != "NaN" ] ; then
+          if [ ! -f ${ARCHIVEF} ] ; then
+            if [ ! -d ${DATADIR} ] ; then
+              mkdir -p ${DATADIR}
+            fi
+            echo "Date,Flow" > ${ARCHIVEF}
+          fi
+          echo "${DATE}, $FLOW" >> ${ARCHIVEF}
+          log_last_update
+        fi
+#     else
+#       echo no line
       fi
-      echo "Date,Flow" > ${ARCHIVEF}
-      echo "${SRCHDATE} 00:00, $FLOW" >> ${ARCHIVEF}
-#   else
-#     echo no line
-    fi
+    done
 
     # if we got it off the net we can remove it
     /bin/rm $FILE
