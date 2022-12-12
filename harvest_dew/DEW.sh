@@ -79,8 +79,8 @@ process_site ()
     if [ -f $FILE ] ; then
       grep "^${SRCHDATE}" $FILE | while read LINE ; do
         if [ "$LINE" != "" ] ; then
-          DATE=`echo $LINE | cut -f1 -d,`
-          VALU=`echo $LINE | cut -f3 -d,`
+          DATE=`echo $LINE | tr -d '\r' | cut -f1 -d,`
+          VALU=`echo $LINE | tr -d '\r' | cut -f3 -d,`
           if [ $VALU != "NaN" ] ; then
             if [ ! -f ${ARCHIVEF} ] ; then
               if [ ! -d ${DATADIR} ] ; then
@@ -98,7 +98,7 @@ process_site ()
       /bin/rm $FILE
       if [ -f ${ARCHIVEF} ] ; then
         head -1 ${ARCHIVEF} > $FILE
-        tail -n+2 ${ARCHIVEF} | sort -u > $FILE
+        tail -n+2 ${ARCHIVEF} | sort -u >> $FILE
         /bin/rm ${ARCHIVEF}
         /bin/mv $FILE ${ARCHIVEF}
       else
