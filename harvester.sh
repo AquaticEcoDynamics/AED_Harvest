@@ -25,6 +25,8 @@ MDBANEXT=0
 MDBAWAIT=12hours
 DEW_NEXT=0
 DEW_WAIT=1day
+TO_S3_NEXT=0
+TO_S3_WAIT=1day
 
 
 # Use $RANDOM. It's often useful in combination with simple shell
@@ -38,6 +40,7 @@ DEW_WAIT=1day
 while `true` ; do
   TODAY=`date`
   NOW=`date +%Y%m%d%H%M`
+  changed=0
 
   if [ $NOW -ge $BOM_NEXT ] ; then
     # echo run BOM.sh
@@ -55,12 +58,14 @@ while `true` ; do
 
     BOM_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $BOM_WAIT"`
 #   echo next BOM at $BOM_NEXT
+    changed=1
   fi
 
   if [ $NOW -ge $BOMT_NEXT ] ; then
     ./harvest_bom_tide/BOM_tide.sh
     BOMT_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $BOMT_WAIT"`
 #   echo next BOMT at $BOMT_NEXT
+    changed=1
   fi
 
   if [ $NOW -ge $DOT_NEXT ] ; then
@@ -72,30 +77,35 @@ while `true` ; do
     ./harvest_dot/DOT.sh --site "mozzie"
     DOT_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $DOT_WAIT"`
 #   echo next DOT at $DOT_NEXT
+    changed=1
   fi
 
   if [ $NOW -ge $WIR_NEXT ] ; then
     ./harvest_wir/WIR.sh
     WIR_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $WIR_WAIT"`
 #   echo next WIR at $WIR_NEXT
+    changed=1
   fi
 
   if [ $NOW -ge $NEONNEXT ] ; then
     ./harvest_neon/NEON.sh
     NEONNEXT=`date +%Y%m%d%H%M --date="$TODAY + $NEONWAIT"`
 #   echo next NEON at $NEONNEXT
+    changed=1
   fi
 
   if [ $NOW -ge $MATINEXT ] ; then
     ./harvest_matilda/MATILDA.sh
     MATINEXT=`date +%Y%m%d%H%M --date="$TODAY + $MATIWAIT"`
 #   echo next MATI at $MATINEXT
+    changed=1
   fi
 
   if [ $NOW -ge $DPIRDNEXT ] ; then
     ./harvest_dpird/DPIRD.sh
     DPIRDNEXT=`date +%Y%m%d%H%M --date="$TODAY + $DPIRDWAIT"`
 #   echo next DPIRD at $DPIRDNEXT
+    changed=1
 
     DPIRDNEXT=0
     DPIRDWAIT=1day
@@ -106,6 +116,7 @@ while `true` ; do
     ./harvest_lwn/LWN.sh
     LWN_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $LWN_WAIT"`
 #   echo next LWN at $LWN_NEXT
+    changed=1
   fi
 
   if [ $NOW -ge $MDBANEXT ] ; then
@@ -115,12 +126,25 @@ while `true` ; do
     ./harvest_mdba/MDBA.sh --site "Lock 1 Downstream"
     MDBANEXT=`date +%Y%m%d%H%M --date="$TODAY + $MDBAWAIT"`
 #   echo next MDBA at $MDBANEXT
+    changed=1
   fi
 
   if [ $NOW -ge $DEW_NEXT ] ; then
     ./harvest_dew/DEW.sh
     DEW_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $DEW_WAIT"`
 #   echo next DEW at $DEW_NEXT
+    changed=1
+  fi
+
+  if [ $changed = 1 ] ; then
+    # if something may have changed we update the status summary
+    ./status_sumary.sh
+  fi
+
+  if [ $NOW -ge $TO_S3_NEXT ] ; then
+#   /usr/bin/rsync -avxz --exclude-from=/Data/AED_Harvest/excluded --delete /Data/AED_Harvest/data hydro@localhost:/buckets/harvest
+    /usr/bin/rsync -avxz --exclude-from=/Data/AED_Harvest/excluded /Data/AED_Harvest/data hydro@localhost:/buckets/harvest
+    TO_S3_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $TO_S3_WAIT"`
   fi
 
   # sleep for a random time between 1 and 3 mins

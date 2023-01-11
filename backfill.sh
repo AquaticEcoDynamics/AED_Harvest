@@ -41,8 +41,7 @@ days_in_month () {
 }
 #------------------------------------------------------------------------------#
 
-# This for back filling 2016 and 2017
-# for year in 2016 2017 ; do
+# for year in 2022 2023 ; do
 #   for month in 01 02 03 04 05 06 07 08 09 10 11 12 ; do
 #     for day in `days_in_month $month $year` ; do
 #       OUTFILE="SP_daily_${year}${month}${day}.csv"

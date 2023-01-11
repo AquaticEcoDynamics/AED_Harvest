@@ -5,3 +5,10 @@ utils
 *-bak
 .*.swp
 harvest.log
+alex-data-sets.csv
+copy_to_s3.sh
+excluded
+sa-water-tests.sh
+sawat.csv
+utility-subs.sh
+x
