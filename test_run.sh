@@ -32,55 +32,62 @@ fi
 
 #echo BACKTIME is \"$BACKTIME\"
 
-    echo harvest_bom barrack
+if [ "1" = "0" ] ; then
+
+    echo harvest_bom barrack $BACKTIME
     ./harvest_bom/BOM.sh $BACKTIME --site barrack
     sleep 1
-    echo harvest_bom meadow
+    echo harvest_bom meadow $BACKTIME
     ./harvest_bom/BOM.sh $BACKTIME --site meadow
     sleep 1
-    echo harvest_bom kent
+    echo harvest_bom kent $BACKTIME
     ./harvest_bom/BOM.sh $BACKTIME --site kent
     sleep 1
-    echo harvest_bom lake alexandrina
+    echo harvest_bom lake alexandrina $BACKTIME
     ./harvest_bom/BOM.sh $BACKTIME --site alex
     sleep 1
-    echo harvest_bom river murray lock 1
+    echo harvest_bom river murray lock 1 $BACKTIME
     ./harvest_bom/BOM.sh $BACKTIME --site murray1
     sleep 1
-    echo harvest_bom river murray lock 6
+    echo harvest_bom river murray lock 6 $BACKTIME
     ./harvest_bom/BOM.sh $BACKTIME --site murray6
 
-    echo harvest_bom_tide
+    echo harvest_bom_tide $BACKTIME
     ./harvest_bom_tide/BOM_tide.sh $BACKTIME
 
-    echo harvest_dot fremantle
+    echo harvest_dot fremantle $BACKTIME
     ./harvest_dot/DOT.sh $BACKTIME --site fremantle
-    echo harvest_dot barrack
+    echo harvest_dot barrack $BACKTIME
     ./harvest_dot/DOT.sh $BACKTIME --site barrack
-    echo harvest_dot peel
+    echo harvest_dot peel $BACKTIME
     ./harvest_dot/DOT.sh $BACKTIME --site peel
-    echo harvest_dot mandurah
+    echo harvest_dot mandurah $BACKTIME
     ./harvest_dot/DOT.sh $BACKTIME --site mandurah
-    echo harvest_dot mozzie
+    echo harvest_dot mozzie $BACKTIME
     ./harvest_dot/DOT.sh $BACKTIME --site mozzie
 
-    echo harvest_neon
+    echo harvest_neon $BACKTIME
     ./harvest_neon/NEON.sh $BACKTIME
 
-    echo harvest_matilda
+    echo harvest_matilda $BACKTIME
     ./harvest_matilda/MATILDA.sh $BACKTIME
 
-    echo harvest_dpird
+    echo harvest_dpird $BACKTIME
     ./harvest_dpird/DPIRD.sh $BACKTIME
 
-    echo harvest_lwn
+    echo harvest_lwn $BACKTIME
     ./harvest_lwn/LWN.sh $BACKTIME
 
-    echo harvest_mdba
+    echo harvest_mdba $BACKTIME
     ./harvest_mdba/MDBA.sh $BACKTIME --site Albert
     ./harvest_mdba/MDBA.sh $BACKTIME --site Alexandrina
     ./harvest_mdba/MDBA.sh $BACKTIME --site "Lock 1 Upstream"
     ./harvest_mdba/MDBA.sh $BACKTIME --site "Lock 1 Downstream"
+
+    echo harvest_dwer $BACKTIME
+    ./harvest_dwer/DWER.sh $BACKTIME --site cockburn
+fi
+    ./harvest_dwer/DWER.sh $BACKTIME --site flow
 
 #   if [ "$BACKTIME" = "" ] ; then
 #     BACKTIME="--today `date +%Y-%m-%d --date=-1day`"

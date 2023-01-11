@@ -23,6 +23,8 @@ LWN_NEXT=0
 LWN_WAIT=12hours
 MDBANEXT=0
 MDBAWAIT=12hours
+DWER_NEXT=0
+DWER_WAIT=1day
 DEW_NEXT=0
 DEW_WAIT=1day
 TO_S3_NEXT=0
@@ -126,6 +128,14 @@ while `true` ; do
     ./harvest_mdba/MDBA.sh --site "Lock 1 Downstream"
     MDBANEXT=`date +%Y%m%d%H%M --date="$TODAY + $MDBAWAIT"`
 #   echo next MDBA at $MDBANEXT
+    changed=1
+  fi
+
+  if [ $NOW -ge $DWER_NEXT ] ; then
+    ./harvest_dwer/DWER.sh --site cockburn
+    ./harvest_dwer/DWER.sh --site flow
+    DWER_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $DWER_WAIT"`
+#   echo next DWER at $DWER_NEXT
     changed=1
   fi
 
