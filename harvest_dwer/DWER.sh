@@ -22,7 +22,7 @@ URL="${FTP_SITE}${COLLECT}"
 TMPPRE="/tmp/tmpx$$_"
 TMPLST=${TMPPRE}Lst
 
-DATADIR="data/${YEAR}/harvest_dwer/${COLLECT}/"
+DATADIR="data/${YEAR}/harvest_dwer/${SITENAME}/"
 
 makeiso () {
   date=`echo $1 | cut -f2 -d\ `
@@ -80,7 +80,7 @@ if [ "$SITENAME" = "flow" ] ; then
         DIRN="${DIRN}-"`echo $FILE | cut -f3 -d~`
         DIRN="${DIRN}-"`echo $FILE | cut -f4 -d~`
         DIRN="${DIRN}-"`echo $FILE | cut -f5 -d~`
-#       echo Fetching $FILE into $DIRN
+#       echo Fetching $FILE into ${DATADIR}/${DIRN}
         mkdir -p ${DATADIR}/${DIRN} > /dev/null 2>&1
         curl --user ${USERNAME}:${PASSWORD} "${URL}/${FILE}" -s -o ${DATADIR}/${DIRN}/${TODAY}.csv
     done
