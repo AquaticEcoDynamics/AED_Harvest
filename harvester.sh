@@ -134,6 +134,7 @@ while `true` ; do
   if [ $NOW -ge $DWER_NEXT ] ; then
     ./harvest_dwer/DWER.sh --site cockburn
     ./harvest_dwer/DWER.sh --site flow
+    ./harvest_dbca/DBCA.sh --site sce
     DWER_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $DWER_WAIT"`
 #   echo next DWER at $DWER_NEXT
     changed=1
