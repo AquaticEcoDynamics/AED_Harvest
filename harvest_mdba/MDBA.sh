@@ -25,7 +25,7 @@ case "$SITENAME" in
 esac
 
 #echo sitefile is \"$sitefile\" from SITENAME \"$SITENAME\"
-SITENAME=`echo $SITENAME | tr ' ' '-' | tr [A-Z] [a-z]`
+SITENAME=`echo $SITENAME | tr ' ' '-' | tr [:upper:] [:lower:]`
 #echo site now $SITENAME
 DATADIR="data/${YEAR}/harvest_mdba/${SITENAME}/"
 
