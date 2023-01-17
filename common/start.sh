@@ -30,7 +30,7 @@ done
 if [ "$SITENAME" != "" ] ; then
   BASENAME="${BASENAME}_${SITENAME}"
 fi
-BASENAME=`echo $BASENAME | tr ' ' '-' | tr [A-Z] [a-z]`
+BASENAME=`echo $BASENAME | tr ' ' '-' | tr [:upper:] [:lower:]`
 
 LOGDIR="data/log/${BASENAME}"
 TMPLOGDIR="/tmp/log_$$"
