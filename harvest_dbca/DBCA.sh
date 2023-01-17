@@ -6,11 +6,8 @@
 FTP_SITE="ftp://ftp.see.uwa.edu.au/data/"
 
 case $SITENAME in
-  "cockburn")
-     COLLECT=cockburn
-     ;;
-  "flow")
-     COLLECT=dwer
+  "dbca")
+     COLLECT=sce
      ;;
    *) # none?
      echo unknown site \"${SITENAME}\" specified\?
@@ -18,8 +15,8 @@ case $SITENAME in
      ;;
 esac
 
-URL="${FTP_SITE}${COLLECT}"
-DATADIR="data/${YEAR}/harvest_dwer/${SITENAME}/"
+URL="${FTP_SITE}${SITENAME}/sites"
+DATADIR="data/${YEAR}/harvest_dbca/${COLLECT}/"
 
 TMPPRE="/tmp/tmpx$$_"
 TMPLST=${TMPPRE}Lst
@@ -74,24 +71,20 @@ curl --user ${USERNAME}:${PASSWORD} --list-only "${URL}/" -s -o $TMPLST
 
 mkdir -p ${DATADIR} > /dev/null 2>&1
 
-if [ "$SITENAME" = "flow" ] ; then
-    grep "${YEAR}-${MONTH}-${DAY}" $TMPLST | while read LINE ; do
-        FILE=`echo $LINE | tr -d '\r'`
-        DIRN=`echo $FILE | cut -f1 -d~`
-        DIRN="${DIRN}-"`echo $FILE | cut -f2 -d~`
-        DIRN="${DIRN}-"`echo $FILE | cut -f3 -d~`
-        DIRN="${DIRN}-"`echo $FILE | cut -f4 -d~`
-        DIRN="${DIRN}-"`echo $FILE | cut -f5 -d~`
-#       echo Fetching $FILE into ${DATADIR}/${DIRN}
-        mkdir -p ${DATADIR}/${DIRN} > /dev/null 2>&1
-        curl --user ${USERNAME}:${PASSWORD} "${URL}/${FILE}" -s -o ${DATADIR}/${DIRN}/${TODAY}.csv
-    done
+#grep "${YEAR}-${MONTH}-${DAY}" $TMPLST | while read LINE ; do
+cat  $TMPLST | while read LINE ; do
+    FILE=`echo $LINE | tr -d '\r'`
+    DIRN=`echo ${FILE} | sed -e 's/\.csv$//'`
+    DIRN="${DIRN}-"`echo $FILE | cut -f5 -d_`
+    echo Fetching $FILE into ${DATADIR}/${DIRN}
+    mkdir -p ${DATADIR}/${DIRN} > /dev/null 2>&1
+    curl --user ${USERNAME}:${PASSWORD} "${URL}/${FILE}" -s -o ${DATADIR}/${DIRN}/${TODAY}.csv
+done
 
-    /bin/rm $TMPLST
+/bin/rm $TMPLST
 
-    . ./common/finish.sh
-    exit 0
-fi
+. ./common/finish.sh
+exit 0
 
 #------------------------------------------------------------------------------#
 

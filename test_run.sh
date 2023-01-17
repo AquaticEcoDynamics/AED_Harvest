@@ -32,8 +32,6 @@ fi
 
 #echo BACKTIME is \"$BACKTIME\"
 
-if [ "1" = "0" ] ; then
-
     echo harvest_bom barrack $BACKTIME
     ./harvest_bom/BOM.sh $BACKTIME --site barrack
     sleep 1
@@ -86,12 +84,10 @@ if [ "1" = "0" ] ; then
 
     echo harvest_dwer $BACKTIME
     ./harvest_dwer/DWER.sh $BACKTIME --site cockburn
-fi
     ./harvest_dwer/DWER.sh $BACKTIME --site flow
 
-#   if [ "$BACKTIME" = "" ] ; then
-#     BACKTIME="--today `date +%Y-%m-%d --date=-1day`"
-#   fi
+    ./harvest_dbca/DBCA.sh $BACKTIME --site sce
+
     echo harvest_dew $BACKTIME
     ./harvest_dew/DEW.sh $BACKTIME
 
