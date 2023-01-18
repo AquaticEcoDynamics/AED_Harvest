@@ -20,6 +20,8 @@ for i in *; do
   fi
 done
 
+echo '</TABLE>' >> ${OUTNAME}
+
 cp ${OUTNAME} ${CWD}/../AED_Harvest.wiki
 cd ${CWD}/../AED_Harvest.wiki
 git pull

@@ -37,6 +37,7 @@ TMPLOGDIR="/tmp/log_$$"
 if [ ! -d "$LOGDIR" ] ; then
   mkdir -p "$LOGDIR"
 fi
+LOGNOW=`date +"%Y%m%d%H%M"`
 
 # echo today supplied is $TODAY
 
@@ -56,7 +57,6 @@ fi
 
 # echo today is $TODAY
 
-LOGNOW=`date +"%Y%m%d%H%M"`
 date +"%Y-%m-%d %H:%M" > "${LOGDIR}/last_run"
 
 mkdir -p ${TMPLOGDIR}

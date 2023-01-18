@@ -3,12 +3,18 @@
 #
 
 if [ -d "${TMPLOGDIR}" ] ; then
-  if [ $LOGTODAY -eq $LOGNOW ] ; then
+  if [ $LOGTODAY -ge $LOGNOW ] ; then
     # this is not a special backfill run
     if [ -f "${TMPLOGDIR}/last_update" ] ; then
       NOWLU=`cat ${TMPLOGDIR}/last_update |  cut -f1 -d\  | tr -d '-'`
-      CURLU=`cat ${LOGDIR}/last_update |  cut -f1 -d\  | tr -d '-'`
-      if [ $CURLU -lt $NOWLU ] ; then
+      if [ -f ${LOGDIR}/last_update ] ; then
+        CURLU=`cat ${LOGDIR}/last_update |  cut -f1 -d\  | tr -d '-'`
+      else
+        CURLU=""
+      fi
+      if [ "$CURLU" = "" ] ; then
+        /bin/cp "${TMPLOGDIR}/last_update" "${LOGDIR}/last_update"
+      elif [ $CURLU -lt $NOWLU ] ; then
         /bin/cp "${TMPLOGDIR}/last_update" "${LOGDIR}/last_update"
       fi
     fi
