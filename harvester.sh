@@ -38,10 +38,12 @@ TO_S3_WAIT=1day
 #   $ echo $((1 + $RANDOM % 10))
 #
 #
+TOM=`date --date="+1day" +%Y%m%d`
 
 while `true` ; do
   TODAY=`date`
   NOW=`date +%Y%m%d%H%M`
+  TOD=`date +%Y%m%d`
   changed=0
 
   if [ $NOW -ge $BOM_NEXT ] ; then
@@ -160,4 +162,11 @@ while `true` ; do
 
   # sleep for a random time between 1 and 3 mins
   sleep $((60 + $RANDOM % 120))
+
+  if [ $TOD -ge TOM ] ; then
+    TOM=`date --date="+1day" +"%Y%m%d"
+    # run yesterday one last time to grab stragglers
+    ./run_all_once.sh --today `date --date="-1day" +%Y-%m-%d`
+  fi
+
 done
