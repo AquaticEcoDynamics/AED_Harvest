@@ -133,7 +133,6 @@ while [ $I -lt $COUNTS ] ; do
   NAME=`echo $NAME | tr ' ' '_' | tr "[:upper:]" "[:lower:]"`
 
   makeiso "`echo $UPDATED | cut -f${I} -d\|`"
-  log_last_data "$FMTDATE"
 
   LN=`echo $TLNX | cut -f${I} -d\|`
   TIDE=`tr -d '\r' < $FILE | sed -n "$((LN+1))p" | cut -f3 -d \> | cut -f1 -d\< `
@@ -172,6 +171,7 @@ while [ $I -lt $COUNTS ] ; do
       echo "date,tide,residual,predicted" > $ARCHIVEF
     fi
     echo "$FMTDATE,$TIDE,$RESID,$PRED" >> $ARCHIVEF
+    set_data_date "$FMTDATE"
     log_last_update
   fi
 

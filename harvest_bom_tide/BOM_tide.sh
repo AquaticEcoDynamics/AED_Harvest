@@ -23,7 +23,6 @@ if [ $? -eq 0 ] ; then
     DATE=`echo $line | cut -f1 -d,`
     ISODATE=`date --date="$DATE" +%Y%m%d%H%M%S`
 #   echo DATE=$DATE ISODATE=$ISODATE
-    log_last_data "$DATE"
 
     if [ $MYSTART -lt $ISODATE ] ; then
       if [ $MYEND -lt $ISODATE ] ; then
@@ -39,6 +38,7 @@ if [ $? -eq 0 ] ; then
       date=`to_std_time_fmt $ISODATE`
       line=`echo $line | cut -f2- -d,`
       echo $date,$line >> ${DATADIR}/${OUTFILE}
+      set_data_date "$date"
       log_last_update
     fi
   done

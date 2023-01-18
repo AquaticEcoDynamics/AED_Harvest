@@ -113,3 +113,30 @@ log_last_data () {
 log_last_update () {
     date +"%Y-%m-%d %H:%M" > "${TMPLOGDIR}/last_update"
 }
+
+set_data_date () {
+  MD=`date --date="$1" "+%Y-%m-%d %H:%M"`
+  TD=`echo $1 | cut -f1 -d\  | tr -d '-'`
+
+  if [ -f "${TMPLOGDIR}/last_data" ] ; then
+    NOWLD=`cat ${TMPLOGDIR}/last_data |  cut -f1 -d\  | tr -d '-'`
+  else
+    NOWLD=""
+  fi
+  if [ "$NOWLD" = "" ] ; then
+    echo $MD > ${TMPLOGDIR}/last_data
+  elif [ $NOWLD -lt $TD ] ; then
+    echo $MD > ${TMPLOGDIR}/last_data
+  fi
+
+  if [ -f "${TMPLOGDIR}/start_data" ] ; then
+    NOWSD=`cat ${TMPLOGDIR}/start_data |  cut -f1 -d\  | tr -d '-'`
+  else
+    NOWSD=""
+  fi
+  if [ "$NOWSD" = "" ] ; then
+    echo $MD > ${TMPLOGDIR}/start_data
+  elif [ $NOWSD -gt $TD ] ; then
+    echo $MD > ${TMPLOGDIR}/start_data
+  fi
+}

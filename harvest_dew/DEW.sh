@@ -89,6 +89,7 @@ process_site ()
               echo "Date,Value" > ${ARCHIVEF}
             fi
             echo "${DATE}, $VALU" >> ${ARCHIVEF}
+            set_data_date "${DATE}"
             log_last_update
           fi
         fi
@@ -137,8 +138,6 @@ SITECODE=A4261002
 UNIT_ID=241
 DATASET='Discharge.Total%20barrage%20flow'
 
-#NEXTONE=`date --date="-3mins" "+%Y%m%d%H%M%S"`
-
 NEXTONE=`date --date="+20secs" "+%Y%m%d%H%M%S"`
 process_site "$SITECODE" "$UNIT_ID" "$DATASET" "$URL"
 
@@ -147,6 +146,8 @@ sort -u harvest_dew/theaddress.txt | while read LINE ; do
    URL=`echo $LINE | tr -d '\r' | cut -f2- -d,`
    DATASET=`echo $URL | tr '&' '\n' | grep DatasetName | cut -f2 -d= | sed -e 's/%40/\@/' | cut -f1 -d\@`
    UNIT_ID=`echo $URL | tr '&' '\n' | grep UnitId | cut -f2 -d=`
+
+#  echo "$SITECODE" "$UNIT_ID" "$DATASET" "$URL"
 
    THISONE=`date "+%Y%m%d%H%M%S"`
    if [ $THISONE -lt $NEXTONE ] ; then

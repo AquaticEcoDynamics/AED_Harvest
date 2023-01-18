@@ -89,7 +89,7 @@ fi
     ./harvest_dbca/DBCA.sh $BACKTIME --site sce
 
     echo harvest_dew $BACKTIME
-    ./harvest_dew/DEW.sh $BACKTIME
+#   ./harvest_dew/DEW.sh $BACKTIME
 
     echo harvest_wir $BACKTIME
     ./harvest_wir/WIR.sh $BACKTIME

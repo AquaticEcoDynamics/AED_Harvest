@@ -6,7 +6,7 @@
 FTP_SITE="ftp://ftp.see.uwa.edu.au/data/"
 
 case $SITENAME in
-  "dbca")
+  "sce")
      COLLECT=sce
      ;;
    *) # none?
@@ -15,7 +15,7 @@ case $SITENAME in
      ;;
 esac
 
-URL="${FTP_SITE}${SITENAME}/sites"
+URL="${FTP_SITE}dbca/sites"
 DATADIR="data/${YEAR}/harvest_dbca/${COLLECT}/"
 
 TMPPRE="/tmp/tmpx$$_"
@@ -76,7 +76,7 @@ cat  $TMPLST | while read LINE ; do
     FILE=`echo $LINE | tr -d '\r'`
     DIRN=`echo ${FILE} | sed -e 's/\.csv$//'`
     DIRN="${DIRN}-"`echo $FILE | cut -f5 -d_`
-    echo Fetching $FILE into ${DATADIR}/${DIRN}
+#   echo Fetching $FILE into ${DATADIR}/${DIRN}
     mkdir -p ${DATADIR}/${DIRN} > /dev/null 2>&1
     curl --user ${USERNAME}:${PASSWORD} "${URL}/${FILE}" -s -o ${DATADIR}/${DIRN}/${TODAY}.csv
 done
@@ -113,6 +113,8 @@ cat $TMPLST | while read LINE ; do
          if [ $ISODT -gt $CURLAST ] ; then
            echo $NEWDT,$REST >> ${DATADIR}/${DIRN}/${TODAY}.csv
            CURLAST=$ISODT
+           set_data_date "$NEWDT"
+           log_last_data
          fi
       done
       count=`wc -l ${DATADIR}/${DIRN}/${TODAY}.csv | cut -f1 -d\ `

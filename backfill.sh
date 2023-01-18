@@ -41,19 +41,17 @@ days_in_month () {
 }
 #------------------------------------------------------------------------------#
 
-# for year in 2022 2023 ; do
-#   for month in 01 02 03 04 05 06 07 08 09 10 11 12 ; do
-#     for day in `days_in_month $month $year` ; do
-#       OUTFILE="SP_daily_${year}${month}${day}.csv"
-#       if [ ! -f archive/${year}/${OUTFILE} ] ; then
-#         get_data SP $year $month $day
-#         mkdir -p archive/${year}
-#         mv ${OUTFILE} archive/${year}
-#       fi
-#     done
-#     sleep 3600
-#   done
-# done
+TODAY=`date +%Y%m%d --date=-1day`
+for year in 2022 2023 ; do
+  for month in 01 02 03 04 05 06 07 08 09 10 11 12 ; do
+    for day in `days_in_month $month $year` ; do
+       if [ $TODAY -lt $year$month$day ] ; then
+         exit 0
+       fi
+       ./run_all_once.sh --today $year-$month-$day
+    done
+  done
+done
 
 
 exit 0

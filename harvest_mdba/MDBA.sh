@@ -72,6 +72,7 @@ fi
 if [ ! -f "${DATADIR}/${ISODATE}.csv" ] ; then
   echo "Time,Value" > ${DATADIR}/${ISODATE}.csv
   echo "${LTIME},${VALUE}" >> ${DATADIR}/${ISODATE}.csv
+  set_data_date "${LTIME}"
   log_last_update
 fi
 

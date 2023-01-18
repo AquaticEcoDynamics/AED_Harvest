@@ -71,7 +71,6 @@ DATADIR="data/${YEAR}/harvest_lwn/${SITENAME}/"
      sed -e 's/{/\n{\n/g' -e 's/}/\n}\n/g' < ${TMPSNR}_${SID} | grep -w time | while read line ; do
        L2=`echo $line | tr ',' '\n' | grep -w time | cut -f2- -d\: | tr -d '"'`
        TIME=`echo $L2 | tr -d '-' | tr -d 'T' | tr -d ':' | cut -f1 -d\.`
-       log_last_data "$TIME"
 
        if [ $TIME -gt $MYEND ] ; then
 #        echo breaking at time $TIME being greater than my end of $MYEND for sensor ${SID}
@@ -82,6 +81,7 @@ DATADIR="data/${YEAR}/harvest_lwn/${SITENAME}/"
 
          LTIME="`to_std_time_fmt $TIME`"
          echo "$LTIME,$VALUE" >> ${DATADIR}/${SNSRNM}/${ISODATE}.csv
+         set_data_date "$LTIME"
          log_last_update
        fi
      done

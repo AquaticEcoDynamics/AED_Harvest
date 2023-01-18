@@ -56,7 +56,6 @@ for WHICH in 6163414 6163441 6163948 6163949 6163950 6163951 6164394 6164648 616
 
         LTIME=`mk_std_time "$TIME"`
         LX=`date --date="$LTIME" +%Y%m%d%H%M%S`
-        log_last_data "$LTIME"
 
 #       echo LTIME=$LTIME LX=$LX LT=$LT
         if [ $LX -ge $LT ] ; then
@@ -75,6 +74,7 @@ for WHICH in 6163414 6163441 6163948 6163949 6163950 6163951 6164394 6164648 616
             ### to here
 
             echo ${LTIME},${VALS} >> ${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}.csv
+            set_data_date "$LTIME"
             log_last_update
           fi
         fi

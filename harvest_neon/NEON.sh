@@ -60,6 +60,7 @@ append_csv() {
        echo $HEAD > x_$2
      fi
      echo $LINE >> x_$2
+     set_data_date "$TIME"
    done
    if [ -f x_$2 ] ; then
      if [ -f $2 ] ; then

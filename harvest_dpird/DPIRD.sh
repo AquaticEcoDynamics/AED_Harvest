@@ -206,6 +206,7 @@ echo -n "$RLMIN,$RLMAX,$RLAVG,"             >> ${OUTFILE}
 echo -n "$SOLARTOT,"                        >> ${OUTFILE}
 echo -n "$WHEIGHT,$WSPMAX,$WSPMDIR," >> ${OUTFILE}
 echo    "$WSPAVG,$WSPADIR"         >> ${OUTFILE}
+   set_data_date "$DATE $TIME"
 
    log_last_update
 
@@ -277,24 +278,26 @@ get_data() {
 #  echo ${CURLCMD}
    ${CURLCMD}
 
+   if [ -f ${FILE} ] ; then
 
-#  echo "All curly"
+#    echo "All curly"
 
-   # The header should be like (only 1 line though) :
-   # station_id,record_datetime,air_temp_min,air_temp_max,air_temp_avg_degC,
-   #                            hum_min,hum_max,rel_hum_avg%,rain_mm,
-   #                            dewpoint_min,dewpoint_max,dewpoint_ave,
-   #                            evaporation,eto_std,eto_tall,total_solar,
-   #                            soil_temp_min,soil_temp_max,soil_temp_ave,
-   #                            wind_speed_max,wind_speed_ave_Km_h,wind_direction_max_deg,wind_direction_max_comp,
-   #                            wet_bulb_degc_min,wet_bulb_degc_max,wet_bulb_degc_ave,
-   #                            delta_t_degc_min,delta_t_degc_max,delta_t_degc_ave,number_recordings
+     # The header should be like (only 1 line though) :
+     # station_id,record_datetime,air_temp_min,air_temp_max,air_temp_avg_degC,
+     #                            hum_min,hum_max,rel_hum_avg%,rain_mm,
+     #                            dewpoint_min,dewpoint_max,dewpoint_ave,
+     #                            evaporation,eto_std,eto_tall,total_solar,
+     #                            soil_temp_min,soil_temp_max,soil_temp_ave,
+     #                            wind_speed_max,wind_speed_ave_Km_h,wind_direction_max_deg,wind_direction_max_comp,
+     #                            wet_bulb_degc_min,wet_bulb_degc_max,wet_bulb_degc_ave,
+     #                            delta_t_degc_min,delta_t_degc_max,delta_t_degc_ave,number_recordings
 
-   echo "datetime,station,air_temp_min (C),air_temp_max (C),air_temp_avg (C),rel_hum_min (%),rel_hum_max (%),rel_hum_ave (%),solrad (W/m2),wind_height (m),wind_speed_max (km/h),wind_direction_max (deg),wind_speed_avg  (km/h),wind_direction_avg (deg)" > ${OUTFILE}
+     echo "datetime,station,air_temp_min (C),air_temp_max (C),air_temp_avg (C),rel_hum_min (%),rel_hum_max (%),rel_hum_ave (%),solrad (W/m2),wind_height (m),wind_speed_max (km/h),wind_direction_max (deg),wind_speed_avg  (km/h),wind_direction_avg (deg)" > ${OUTFILE}
 
-   sed -e 's/{/\n{\n/g' -e 's/}/\n}\n/g' < ${FILE} | extract_data
+     sed -e 's/{/\n{\n/g' -e 's/}/\n}\n/g' < ${FILE} | extract_data
 
-   /bin/rm ${FILE}
+     /bin/rm ${FILE}
+   fi
 }
 #------------------------------------------------------------------------------#
 
@@ -308,7 +311,9 @@ get_data() {
   if [ ! -f ${DATADIR}/${YEAR}${MONTH}${DAY}.csv ] ; then
      get_data SP $YEAR $MONTH $DAY
      #mkdir -p data/${YEAR}
-     mv ${OUTFILE} ${DATADIR}/${YEAR}${MONTH}${DAY}.csv
+     if [ -f ${OUTFILE} ] ; then
+       mv ${OUTFILE} ${DATADIR}/${YEAR}${MONTH}${DAY}.csv
+     fi
 # else
 #    /bin/rm ${OUTFILE}
   fi
