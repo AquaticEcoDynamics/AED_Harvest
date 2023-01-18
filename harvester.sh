@@ -164,7 +164,7 @@ while `true` ; do
   sleep $((60 + $RANDOM % 120))
 
   if [ $TOD -ge TOM ] ; then
-    TOM=`date --date="+1day" +"%Y%m%d"
+    TOM=`date --date="+1day" +"%Y%m%d"`
     # run yesterday one last time to grab stragglers
     ./run_all_once.sh --today `date --date="-1day" +%Y-%m-%d`
   fi
