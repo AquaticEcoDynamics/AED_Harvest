@@ -2,6 +2,77 @@
 #
 # This needs finishing
 
+YEARS="2022 2023"
+YEARS_r="2023 2022"
+
+FROMD=""
+TOD=""
+REVERSE=""
+COMMAND=""
+
+while [ $# -gt 0 ] ; do
+  case $1 in
+# debug is not yet implemented
+#   --debug)
+#     export DEBUG=true
+#     ;;
+    --from)
+      shift
+      FROMD="$1"
+      ;;
+    --to)
+      shift
+      TOD="$1"
+      ;;
+    --command)
+      shift
+      COMMAND="$1"
+      ;;
+    --reverse | --backward)
+      REVERSE="TRUE"
+      ;;
+    --help)
+      echo "backfill.sh : run the harvesting to fill days gone by"
+      echo "backfill.sh accepts :"
+      echo "     \"--from YYYY-MM-DD\" : run from start date specified"
+      echo "     \"--to YYYY-MM-DD\" :   run up to end date specified"
+      echo "     \"--reverse\" :         run from end date down to start date"
+      exit 0
+      ;;
+    *)
+      ;;
+  esac
+  shift
+done
+
+#------------------------------------------------------------------------------#
+if [ "$TOD" = "" ] ; then
+  EOD=`date +"%Y%m%d"`
+else
+  EOD=`date --date="$TOD" +"%Y%m%d"`
+fi
+if [ "$FROMD" = "" ] ; then
+  SOD=`date +"%Y0101"`
+else
+  SOD=`date --date="$FROMD" +"%Y%m%d"`
+fi
+if [ $SOD -gt $EOD ] ; then
+  x=$SOD
+  SOD=$EOD
+  EOD=$x
+fi
+if [ `date +%Y%m%d` -lt $EOD ] ; then
+  EOD=`date +%Y%m%d`
+fi
+#echo SOD=\"$SOD\" EOD=\"$EOD\"
+
+if [ "$COMMAND" = "" ] ; then
+  COMMAND="./run_all_once.sh"
+fi
+
+#------------------------------------------------------------------------------#
+MONTHS="01 02 03 04 05 06 07 08 09 10 11 12"
+MONTHS_r="12 11 10 09 08 07 06 05 04 03 02 01"
 
 #------------------------------------------------------------------------------#
 leap_year() {
@@ -41,17 +112,54 @@ days_in_month () {
 }
 #------------------------------------------------------------------------------#
 
-TODAY=`date +%Y%m%d --date=-1day`
-for year in 2022 2023 ; do
-  for month in 01 02 03 04 05 06 07 08 09 10 11 12 ; do
-    for day in `days_in_month $month $year` ; do
-       if [ $TODAY -lt $year$month$day ] ; then
-         exit 0
-       fi
-       ./run_all_once.sh --today $year-$month-$day
+#------------------------------------------------------------------------------#
+days_in_month_r () {
+ case $1 in
+   01) echo 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 ;;
+   02) if [ "`leap_year $2`" = "Y" ] ; then
+          echo 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01
+       else
+          echo    28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01
+       fi ;;
+   03) echo 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 ;;
+   04) echo    30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 ;;
+   05) echo 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 ;;
+   06) echo    30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 ;;
+   07) echo 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 ;;
+   08) echo 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 ;;
+   09) echo    30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 ;;
+   10) echo 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 ;;
+   11) echo    30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 ;;
+   12) echo 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 ;;
+ esac
+}
+#------------------------------------------------------------------------------#
+
+if [ "$REVERSE" = "TRUE" ] ; then
+  for year in $YEARS_r ; do
+    for month in $MONTHS_r ; do
+      for day in `days_in_month_r $month $year` ; do
+         if [ $SOD -le $year$month$day ] ; then
+           if [ $EOD -ge $year$month$day ] ; then
+             $COMMAND --today $year-$month-$day
+           fi
+         fi
+      done
     done
   done
-done
+else
+  for year in $YEARS ; do
+    for month in $MONTHS ; do
+      for day in `days_in_month $month $year` ; do
+         if [ $SOD -le $year$month$day ] ; then
+           if [ $EOD -ge $year$month$day ] ; then
+             $COMMAND --today $year-$month-$day
+           fi
+         fi
+      done
+    done
+  done
+fi
 
 
 exit 0
