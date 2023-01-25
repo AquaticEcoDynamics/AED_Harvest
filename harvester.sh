@@ -149,14 +149,14 @@ while `true` ; do
     changed=1
   fi
 
-  if [ $changed = 1 ] ; then
+  if [ $changed -ne 0 ] ; then
     # if something may have changed we update the status summary
-    ./status_sumary.sh
+    ./status_summary.sh > data/log/status_updater.log 2>&1
   fi
 
   if [ $NOW -ge $TO_S3_NEXT ] ; then
-#   /usr/bin/rsync -avxz --exclude-from=/Data/AED_Harvest/excluded --delete /Data/AED_Harvest/data hydro@localhost:/buckets/harvest
-    /usr/bin/rsync -avxz --exclude-from=/Data/AED_Harvest/excluded /Data/AED_Harvest/data hydro@localhost:/buckets/harvest
+    /usr/bin/rsync -avxz --exclude-from=/Data/AED_Harvest/excluded --delete /Data/AED_Harvest/data hydro@localhost:/buckets/harvest
+#   /usr/bin/rsync -avxz --exclude-from=/Data/AED_Harvest/excluded /Data/AED_Harvest/data hydro@localhost:/buckets/harvest
     TO_S3_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $TO_S3_WAIT"`
   fi
 
