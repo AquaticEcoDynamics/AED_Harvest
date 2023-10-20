@@ -34,6 +34,16 @@ makeiso () {
   mnth=`echo $date | cut -f2 -d/`
   year=`echo $date | cut -f3 -d/`
 
+  if [ "$day" = "$date" ] ; then
+    day=`echo $date | cut -f1 -d-`
+  fi
+  if [ "$mnth" = "$date" ] ; then
+    mnth=`echo $date | cut -f2 -d-`
+  fi
+  if [ "$year" = "$date" ] ; then
+    year=`echo $date | cut -f3 -d-`
+  fi
+
   hour=`echo $time | cut -f1 -d:`
   min=`echo $time | cut -f2 -d:`
 
@@ -47,6 +57,16 @@ makeiso2 () {
   day=`echo $date | cut -f1 -d/`
   mnth=`echo $date | cut -f2 -d/`
   year=`echo $date | cut -f3 -d/`
+
+  if [ "$day" = "$date" ] ; then
+    day=`echo $date | cut -f1 -d-`
+  fi
+  if [ "$mnth" = "$date" ] ; then
+    mnth=`echo $date | cut -f2 -d-`
+  fi
+  if [ "$year" = "$date" ] ; then
+    year=`echo $date | cut -f3 -d-`
+  fi
 
   hour=`echo $time | cut -f1 -d:`
   min=`echo $time | cut -f2 -d:`

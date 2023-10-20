@@ -2,8 +2,8 @@
 #
 # This needs finishing
 
-YEARS="2022 2023"
-YEARS_r="2023 2022"
+YEARS="2020 2021 2022 2023"
+YEARS_r="2023 2022 2021 2020"
 
 FROMD=""
 TOD=""
@@ -37,6 +37,9 @@ while [ $# -gt 0 ] ; do
       echo "     \"--from YYYY-MM-DD\" : run from start date specified"
       echo "     \"--to YYYY-MM-DD\" :   run up to end date specified"
       echo "     \"--reverse\" :         run from end date down to start date"
+      echo "     \"--command\" :         which script to run; eg :"
+      echo "                                 --command ./harvest_wir/WIR"
+      echo "                             default is ./run_all_once.sh"
       exit 0
       ;;
     *)

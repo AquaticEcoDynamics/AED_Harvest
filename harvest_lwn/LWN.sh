@@ -54,7 +54,11 @@ DATADIR="data/${YEAR}/harvest_lwn/${SITENAME}/"
      else
        # might want to extract the last line time and only add later data
        LX=`tail -1 ${DATADIR}/${SNSRNM}/${ISODATE}.csv | cut -f1 -d,`
-       LT=`date --date="$LX" +%Y%m%d%H%M%S`
+       if [ "$LX" = "Time" ] ; then
+         LT=""
+       else
+         LT=`date --date="$LX" +%Y%m%d%H%M%S`
+       fi
      fi
      if [ "$LT" = "" ] ; then
        LT="0"

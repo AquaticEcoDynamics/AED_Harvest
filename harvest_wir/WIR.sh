@@ -1,10 +1,15 @@
 #!/bin/bash
+#
+# harvest_wir/WIR.sh
 
 . ./common/start.sh
 
 URL="https://kumina.water.wa.gov.au/waterinformation/wir/reports/publish/"
 
 DATADIR="data/${YEAR}/harvest_wir/"
+
+SRCHDATE="${DAY}/${MONTH}/${YEAR}"
+export IGNORE='"", 255,"", 255,"", 255,"", 255,"", 255,"", 255,"", 255'
 
 mk_std_time () {
 # convert from "03:50:00 01/09/2022" to "2022-09-01 03:50"
@@ -23,8 +28,6 @@ mk_std_time () {
 
 CWD=`pwd`
 
-SRCHDATE="${DAY}/${MONTH}/${YEAR}"
-IGNORE='"", 255,"", 255,"", 255,"", 255,"", 255,"", 255,"", 255'
 
 for WHICH in 6163414 6163441 6163948 6163949 6163950 6163951 6164394 6164648 6164677 6164685 ; do
 
@@ -41,46 +44,53 @@ for WHICH in 6163414 6163441 6163948 6163949 6163950 6163951 6164394 6164648 616
     for file in *.csv ; do
       # extract only those lines for "today" and feed them into the while loop
       TST="`echo $file | cut -f7 -d~ | cut -f1 -d.`"
-      OUTWHICH=$WHICH$TST
-      if [ -f ${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}.csv ] ; then
-        LX=`tail -1 ${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}.csv | cut -f1 -d,`
-        LT=`date --date="$LX" +%Y%m%d%H%M%S`
-      fi
-      if [ "$LT" = "" ] ; then LT="0" ; fi
-      if [ $LT -lt $MYSTART ] ; then LT=$MYSTART ; fi
+      export OUTWHICH=$WHICH$TST
 
 #     echo FILE=$file TST=\"$TST\" OUTWHICH=$OUTWHICH LT=$LT
+      if [ -d ${CWD}/${DATADIR}/dbca_${OUTWHICH} ] ; then
+        list="${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}_*.csv"
+        if [ "$list" != "" ] ; then
+          for fl in $list ; do
+            /bin/rm $fl
+          done
+        fi
+      fi
 
       grep "$SRCHDATE" $file | while read line ; do
         TIME=`echo $line | cut -f1 -d,`
-
         LTIME=`mk_std_time "$TIME"`
-        LX=`date --date="$LTIME" +%Y%m%d%H%M%S`
 
-#       echo LTIME=$LTIME LX=$LX LT=$LT
-        if [ $LX -ge $LT ] ; then
-          VALS=`echo $line | cut -f2- -d, | tr -d '\r'`
-          if [ "$VALS" != "$IGNORE" ] ; then
-
-            ### only create dir and header if there is actually data to add
-            if [ ! -d ${CWD}/${DATADIR}/dbca_${OUTWHICH} ] ; then
-              mkdir -p ${CWD}/${DATADIR}/dbca_${OUTWHICH}
-            fi
-
-            if [ ! -f ${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}.csv ] ; then
-              line=`head -4 $file`
-              echo $line > ${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}.csv
-            fi
-            ### to here
-
-            echo ${LTIME},${VALS} >> ${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}.csv
-            set_data_date "$LTIME"
-            log_last_update
+        VALS=`echo $line | cut -f2- -d, | tr -d '\r'`
+        if [ "$VALS" != "$IGNORE" ] ; then
+          ### only create dir and header if there is actually data to add
+          if [ ! -d ${CWD}/${DATADIR}/dbca_${OUTWHICH} ] ; then
+            mkdir -p ${CWD}/${DATADIR}/dbca_${OUTWHICH}
           fi
+
+          if [ ! -f ${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}_.csv ] ; then
+            head -4 $file > ${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}_.csv
+          fi
+          ### to here
+
+          echo ${LTIME},${VALS} >> ${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}_.csv
+        else
+          touch ${TMPDIR}/ignored
         fi
       done
     done
 
+    if [ ! -f ${TMPDIR}/ignored ] ; then
+      /bin/mv ${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}_.csv ${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}.csv
+    else
+      LAST_TIME=""
+      NLN=`wc -l ${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}_.csv | cut -f1 -d\ `
+      if [ $NLN -gt 1 ] ; then
+        LAST_TIME=`tail -1 ${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}_.csv | \
+                                     cut -f1 -d, | cut -f2 -d\ | tr -d ':'`
+ #      echo "Last time is ${LAST_TIME}"
+        /bin/mv ${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}_.csv ${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}_${LAST_TIME}.csv
+      fi
+    fi
     cd ${CWD}
 
     /bin/rm -rf ${TMPDIR}
@@ -89,6 +99,12 @@ for WHICH in 6163414 6163441 6163948 6163949 6163950 6163951 6164394 6164648 616
 #   echo wget failed
   fi
 done
+if [ "$T1" = "" ] ; then
+  # T1 should only be set when we are already backfilling
+  # run yesterday as well because some data doesnt appear until the following day
+  export T1="$YESTERDAY"
+  $0 --today=$YESTERDAY
+fi
 
 . ./common/finish.sh
 
