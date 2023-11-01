@@ -86,7 +86,8 @@ fi
     ./harvest_dwer/DWER.sh $BACKTIME --site cockburn
     ./harvest_dwer/DWER.sh $BACKTIME --site flow
 
-    ./harvest_dbca/DBCA.sh $BACKTIME --site sce
+#   ./harvest_dbca/DBCA.sh $BACKTIME --site sce
+    ./harvest_wiski/WISKI.sh $BACKTIME
 
     echo harvest_wir $BACKTIME
     ./harvest_wir/WIR.sh $BACKTIME

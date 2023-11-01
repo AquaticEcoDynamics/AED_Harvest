@@ -136,7 +136,9 @@ while `true` ; do
   if [ $NOW -ge $DWER_NEXT ] ; then
     ./harvest_dwer/DWER.sh --site cockburn
     ./harvest_dwer/DWER.sh --site flow
-    ./harvest_dbca/DBCA.sh --site sce
+#   ./harvest_dbca/DBCA.sh --site sce
+    ./harvest_wiski/WISKI.sh
+    /usr/bin/rsync -avxz /Data/AED_Harvest/data_tmp/wiski.csv hydro@localhost:/buckets/scevo-data/arms/
     DWER_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $DWER_WAIT"`
 #   echo next DWER at $DWER_NEXT
     changed=1

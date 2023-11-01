@@ -11,8 +11,8 @@ excluded
 sa-water-tests.sh
 sawat.csv
 utility-subs.sh
-x
 dwer_data_old.tar
 dwer_back.sh
 dwer_data_old.list
 data_back
+data_tmp

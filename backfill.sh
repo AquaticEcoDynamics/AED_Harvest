@@ -38,7 +38,7 @@ while [ $# -gt 0 ] ; do
       echo "     \"--to YYYY-MM-DD\" :   run up to end date specified"
       echo "     \"--reverse\" :         run from end date down to start date"
       echo "     \"--command\" :         which script to run; eg :"
-      echo "                                 --command ./harvest_wir/WIR"
+      echo "                                 --command ./harvest_wir/WIR.sh"
       echo "                             default is ./run_all_once.sh"
       exit 0
       ;;

@@ -27,7 +27,7 @@ curl -X GET "${WEBSITE}sensor-groups" -H "${H1}" -H "${H2}" -s -o $TMPGRP
 STATLN=`sed -e 's/{/\n{\n/g' -e 's/}/\n}\n/g' < $TMPGRP | grep '"name":"15 minute data"'`
 echo $STATLN | tr ',' '\n' | grep '"stationName":' | cut -f2 -d\: | tr -d '"'
 
-/bin/rm ${TMPPRE}*
+/bin/rm ${TMPGRP}
 . ./common/finish.sh
 
 exit 0

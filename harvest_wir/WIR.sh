@@ -99,12 +99,6 @@ for WHICH in 6163414 6163441 6163948 6163949 6163950 6163951 6164394 6164648 616
 #   echo wget failed
   fi
 done
-if [ "$T1" = "" ] ; then
-  # T1 should only be set when we are already backfilling
-  # run yesterday as well because some data doesnt appear until the following day
-  export T1="$YESTERDAY"
-  $0 --today=$YESTERDAY
-fi
 
 . ./common/finish.sh
 
