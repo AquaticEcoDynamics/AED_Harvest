@@ -382,15 +382,16 @@ day=`echo $START | cut -f3 -d/`
 
   OUTFILE="dpird_SP_daily_${year}${month}${day}.csv"
   get_data SP $year $month $day
-  if [ -f ${DATADIR}/${year}${month}${day}.csv ] ; then
-     #mkdir -p data/${year}
-     if [ -f ${OUTFILE} ] ; then
+  if [ -f ${OUTFILE} ] ; then
+     if [ -f ${DATADIR}/${year}${month}${day}.csv ] ; then
        diff -q ${OUTFILE} ${DATADIR}/${year}${month}${day}.csv >& /dev/null
        if [ $? -eq 0 ] ; then # files are the same
          /bin/rm ${OUTFILE}
        else
          /bin/mv ${OUTFILE} ${DATADIR}/${year}${month}${day}.csv
        fi
+     else
+       /bin/mv ${OUTFILE} ${DATADIR}/${year}${month}${day}.csv
      fi
   fi
 
