@@ -108,7 +108,7 @@ UPDATED=`tr -d '\r' < $FILE | sed -e '/./{H;$!d;}' -e 'x;/Recorded Tide:/!d' | g
 RESIDUAL=`tr -d '\r' < $FILE | sed -e '/./{H;$!d;}' -e 'x;/Recorded Tide:/!d' | grep Residual: | cut -f5 -d\> | cut -f1 -d\< | tr '\n' '\|'`
 PREDICTED=`tr -d '\r' < $FILE | sed -e '/./{H;$!d;}' -e 'x;/Recorded Tide:/!d' | grep Predicted: | cut -f5 -d\> | cut -f1 -d\< | tr '\n' '\|'`
 
-NAMES=`tr -d '\r' < $FILE | grep 'anchor-margin'| cut -f8 -d\> | cut -f1 -d\< | tr '\n' '\|' | cut -f2- -d\|`
+NAMES=`tr -d '\r' < $FILE | grep 'anchor-margin'| cut -f9 -d\> | cut -f1 -d\< | tr '\n' '\|' | cut -f2- -d\|`
 # at some point the format was changed, so this went from 8 to 9 and we need to remove the leading blank line
 
 # Count the number of times a paragraph of Recorded Tide appears
@@ -149,6 +149,7 @@ while [ $I -lt $COUNTS ] ; do
 
   if [ $COUNTS -gt 1 ] ; then
     COLLECT=moz_${NAME}
+    export DATADIR="data/${YEAR}/harvest_dot/${COLLECT}"
   fi
 
 # echo Collect is \"$COLLECT\"

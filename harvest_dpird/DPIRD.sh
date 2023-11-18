@@ -370,23 +370,29 @@ fi
 }
 #------------------------------------------------------------------------------#
 
+T1=`date +"%Y%m%d"`
+if [ "$T1" = "$TODAY" ] ; then
+  START=`date --date="${TODAY} -1day" +%Y/%m/%d`
+else
+  START=`date --date="${TODAY}" +%Y/%m/%d`
+fi
+year=`echo $START | cut -f1 -d/`
+month=`echo $START | cut -f2 -d/`
+day=`echo $START | cut -f3 -d/`
 
-#START=`date --date=-1day +%Y/%m/%d`
-#year=`echo $START | cut -f1 -d/`
-#month=`echo $START | cut -f2 -d/`
-#day=`echo $START | cut -f3 -d/`
-
-  OUTFILE="dpird_SP_daily_${YEAR}${MONTH}${DAY}.csv"
-  if [ ! -f ${DATADIR}/${YEAR}${MONTH}${DAY}.csv ] ; then
-     get_data SP $YEAR $MONTH $DAY
-     #mkdir -p data/${YEAR}
+  OUTFILE="dpird_SP_daily_${year}${month}${day}.csv"
+  get_data SP $year $month $day
+  if [ -f ${DATADIR}/${year}${month}${day}.csv ] ; then
+     #mkdir -p data/${year}
      if [ -f ${OUTFILE} ] ; then
-       mv ${OUTFILE} ${DATADIR}/${YEAR}${MONTH}${DAY}.csv
+       diff -q ${OUTFILE} ${DATADIR}/${year}${month}${day}.csv >& /dev/null
+       if [ $? -eq 0 ] ; then # files are the same
+         /bin/rm ${OUTFILE}
+       else
+         /bin/mv ${OUTFILE} ${DATADIR}/${year}${month}${day}.csv
+       fi
      fi
-# else
-#    /bin/rm ${OUTFILE}
   fi
-# exit 0
 
 . ./common/finish.sh
 
