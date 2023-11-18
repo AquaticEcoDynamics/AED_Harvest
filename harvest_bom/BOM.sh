@@ -74,15 +74,22 @@ makeiso2 () {
 
 
 SRCHDATE="${DAY}/${MONTH}/${YEAR}"
-ARCHIVEF="${DATADIR}/${TODAY}.csv"
+ARCHIVEF="${DATADIR}/${TODAY}_.csv"
 
-if [ -f $ARCHIVEF ] ; then
-  # if file exists, get the last line and decode its date entry
-  LAST=`tail -1 $ARCHIVEF | cut -f1 -d,`
-# echo ARCHIVEF=$ARCHIVEF LAST=$LAST
-  LASTENTRY=`makeiso2 "$LAST"`
-else
-  LASTENTRY=000000000000
+# if [ -f $ARCHIVEF ] ; then
+#   # if file exists, get the last line and decode its date entry
+#   LAST=`tail -1 $ARCHIVEF | cut -f1 -d,`
+# # echo ARCHIVEF=$ARCHIVEF LAST=$LAST
+#   LASTENTRY=`makeiso2 "$LAST"`
+# else
+#   LASTENTRY=000000000000
+# fi
+LASTENTRY=000000000000
+list=`/bin/ls ${DATADIR}/${TODAY}_*.csv 2> /dev/null`
+if [ "$list" != "" ] ; then
+  for fl in $list ; do
+    /bin/rm $fl
+  done
 fi
 
 # Fetch the data file
@@ -136,11 +143,26 @@ do
 done
 }
 
+
 # This will extract the body of the table :
 #
 #    tr -d '\r' < $FILE | sed -n '/<tbody/,/<\/tbody/p'
 
 tr -d '\r' < $FILE | sed -n '/<tbody/,/<\/tbody/p' | do_table_rows
+
+if [ -f $ARCHIVEF ] ; then
+  NLINES=`wc -l $ARCHIVEF | cut -f1 -d\ `
+  if [ $NLINES -gt 0 ] ; then
+    LAST_TIME=`tail -1 $ARCHIVEF 2> /dev/null | cut -f1 -d, | cut -f2 -d\  | tr -d ':'`
+    if [ $LAST_TIME -ge 2355 ] ; then
+      /bin/mv $ARCHIVEF ${DATADIR}/${TODAY}.csv
+    else
+      /bin/mv $ARCHIVEF ${DATADIR}/${TODAY}_${LAST_TIME}.csv
+    fi
+  else
+    /bin/rm $ARCHIVEF
+  fi
+fi
 
 
 # if we got it off the net we can remove it

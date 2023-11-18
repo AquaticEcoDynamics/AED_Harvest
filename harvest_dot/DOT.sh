@@ -108,7 +108,8 @@ UPDATED=`tr -d '\r' < $FILE | sed -e '/./{H;$!d;}' -e 'x;/Recorded Tide:/!d' | g
 RESIDUAL=`tr -d '\r' < $FILE | sed -e '/./{H;$!d;}' -e 'x;/Recorded Tide:/!d' | grep Residual: | cut -f5 -d\> | cut -f1 -d\< | tr '\n' '\|'`
 PREDICTED=`tr -d '\r' < $FILE | sed -e '/./{H;$!d;}' -e 'x;/Recorded Tide:/!d' | grep Predicted: | cut -f5 -d\> | cut -f1 -d\< | tr '\n' '\|'`
 
-NAMES=`tr -d '\r' < $FILE | grep 'anchor-margin'| cut -f8 -d\> | cut -f1 -d\< | tr '\n' '\|'`
+NAMES=`tr -d '\r' < $FILE | grep 'anchor-margin'| cut -f8 -d\> | cut -f1 -d\< | tr '\n' '\|' | cut -f2- -d\|`
+# at some point the format was changed, so this went from 8 to 9 and we need to remove the leading blank line
 
 # Count the number of times a paragraph of Recorded Tide appears
 COUNTS=`tr -d '\r' < $FILE | sed -e '/./{H;$!d;}' -e 'x;/Recorded Tide:/!d' | grep Updated | cut -f2 -d\> | cut -f1 -d\< | cut -f2- -d\  | wc -l`
@@ -152,12 +153,20 @@ while [ $I -lt $COUNTS ] ; do
 
 # echo Collect is \"$COLLECT\"
   ARCHIVEF="${DATADIR}/${TODAY}.csv"
+  list=`/bin/ls ${DATADIR}/${TODAY}*.csv 2> /dev/null`
+  if [ "$list" != "" ] ; then
+    for fl in $list ; do
+      /bin/rm $fl
+      export ARCHIVEF="$fl"
+    done
+  fi
+
   /bin/mkdir -p "${DATADIR}" >& /dev/null
 
   if [ -f $ARCHIVEF ] ; then
     # if file exists, get the last line and decode its date entry
     LAST=`tail -1 $ARCHIVEF | cut -f1 -d,`
-#echo last in $ARCHIVEF is $LAST
+# echo last in $ARCHIVEF is $LAST
     LASTENTRY=`lastiso "$LAST"`
   else
     LASTENTRY=0
@@ -173,6 +182,8 @@ while [ $I -lt $COUNTS ] ; do
     echo "$FMTDATE,$TIDE,$RESID,$PRED" >> $ARCHIVEF
     set_data_date "$FMTDATE"
     log_last_update
+    LAST_TIME=`echo $FMTDATE | cut -f2 -d\  | tr -d ':'`
+    /bin/mv $ARCHIVEF ${DATADIR}/${TODAY}_${LAST_TIME}.csv
   fi
 
 # echo "=============================="

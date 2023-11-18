@@ -48,7 +48,7 @@ for WHICH in 6163414 6163441 6163948 6163949 6163950 6163951 6164394 6164648 616
 
 #     echo FILE=$file TST=\"$TST\" OUTWHICH=$OUTWHICH LT=$LT
       if [ -d ${CWD}/${DATADIR}/dbca_${OUTWHICH} ] ; then
-        list="${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}_*.csv"
+        list=`/bin/ls ${CWD}/${DATADIR}/dbca_${OUTWHICH}/${TODAY}_*.csv 2> /dev/null`
         if [ "$list" != "" ] ; then
           for fl in $list ; do
             /bin/rm $fl

@@ -51,14 +51,16 @@ done
 /bin/rm $TMPLST
 count=0
 for f in ${DATADIR}/* ; do
-  if [ $count -eq 0 ] ; then
-    echo "cat $f \> ${base_dir}wiski.csv"
-    cat $f > ${base_dir}wiski.csv
-  else
-    echo "tail -n +2 $f \>\> ${base_dir}wiski.csv"
-    tail -n +2 $f >> ${base_dir}wiski.csv
+  if [ -f $f ] ; then
+    if [ $count -eq 0 ] ; then
+    # echo "cat $f \> ${base_dir}wiski.csv"
+      cat $f > ${base_dir}wiski.csv
+    else
+    # echo "tail -n +2 $f \>\> ${base_dir}wiski.csv"
+      tail -n +2 $f >> ${base_dir}wiski.csv
   fi
   count=$((count+1))
+  fi
 done
 
 . ./common/finish.sh
