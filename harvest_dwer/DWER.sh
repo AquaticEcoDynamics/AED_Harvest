@@ -90,9 +90,20 @@ make_dt () {
 }
 
 #------------------------------------------------------------------------------#
+#echo curl --user ${USERNAME}:${PASSWORD} --list-only "${URL}/" -s -o ${TMPLST}
 curl --user ${USERNAME}:${PASSWORD} --list-only "${URL}/" -s -o ${TMPLST}
 
 if [ -f ${TMPLST} ] ; then
+  T1=`date +"%Y%m%d"`
+  if [ "$T1" = "$TODAY" ] ; then
+    START=`date --date="${TODAY} -1day" +%Y/%m/%d`
+  else
+    START=`date --date="${TODAY}" +%Y/%m/%d`
+  fi
+  YEAR=`echo $START | cut -f1 -d/`
+  MONTH=`echo $START | cut -f2 -d/`
+  DAY=`echo $START | cut -f3 -d/`
+
   mkdir -p ${DATADIR} > /dev/null 2>&1
 
   if [ "$SITENAME" = "flow" ] ; then
