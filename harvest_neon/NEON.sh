@@ -39,18 +39,21 @@ append_csv() {
 
    while read LINE ; do
      TIME=`echo $LINE | cut -f4 -d\" | tr -d '-' | tr -d ':' | tr -d 'T'`
-     LTIME=`echo $LINE | cut -f4 -d\" | tr -d ' ' | cut -f1 -dT`
-#echo time \"$TIME\" ltime \"$LTIME\"
+     LDATE=`echo $LINE | cut -f4 -d\" | tr -d ' ' | cut -f1 -dT`
+     LTIME=`echo $LINE | cut -f4 -d\" | tr -d ' ' | cut -f2 -dT`
+#echo time \"$TIME\" ldate \"$LDATE\" ltime \"$LTIME\"
 
      VALU=`echo $LINE | cut -f8 -d\"`
 #    echo $TIME $VALU
      if [ -f $2 ] ; then
-       LINE=`grep $TIME $2`
+     # LINE=`grep $TIME $2`
+       LINE=`grep "$LDATE $LTIME" $2`
      else
        LINE=""
      fi
      if [ "$LINE" = "" ] ; then
-       LINE=$TIME
+     # LINE=$TIME
+       LINE="$LDATE $LTIME"
        TC=0
        while [ $TC -lt $COUNT ] ; do
           LINE=${LINE},
@@ -62,7 +65,7 @@ append_csv() {
        echo $HEAD > x_$2
      fi
      echo $LINE >> x_$2
-     set_data_date "$LTIME"
+     set_data_date "$LDATE"
    done
    if [ -f x_$2 ] ; then
      if [ -f $2 ] ; then
@@ -91,7 +94,7 @@ show_channels() {
 ## also, for now at least, it seems if the sensor has stopped working (ie LastTime is a while ago) 
 ## it doesnt respond, even to requests for historical data.
 
-     echo CHANNEL $ChanID   CALLED \"$ChanNam\" # FirstTime $FirstTime LastTime $LastTime
+#    echo CHANNEL $ChanID   CALLED \"$ChanNam\" # FirstTime $FirstTime LastTime $LastTime
 
      FTCHFILE=${TMPPRE}${ChanID}
 
@@ -118,7 +121,7 @@ show_nodes() {
    while read LINE ; do
        NodeID=`echo ${LINE} | cut -f2 -d: | cut -f1 -d,`
        NodeNam=`echo ${LINE} | cut -f3 -d: | cut -f1 -d, | tr ' ' '_' | tr -d '\"'`
-       echo NodeID ${NodeID} Called ${NodeNam} has the following channels :
+#      echo NodeID ${NodeID} Called ${NodeNam} has the following channels :
 
 # echo  "wget -q -O ${CHNTMP} --header=\"X-Authentication-Token:${LoginToken}\" \"${NEON_SERVER}/GetChannelList/${NodeID}?ShowInactive=false\""
        wget -q -O ${CHNTMP} --header="X-Authentication-Token:${LoginToken}" "${NEON_SERVER}/GetChannelList/${NodeID}?ShowInactive=false"
