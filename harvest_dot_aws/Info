@@ -1,0 +1,13 @@
+Need to setup another harvester : harvest_dot_aws
+ 
+This one is to connect to an Amazon S3 drive.
+ 
+access key : AKIAYFKKKM3FKWRYYHXV
+secret access key : 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
+folder with data: /cibu.ocean/TideUTAmazon/
+ 
+Two main sub-folders we need to harvest (FBV & BAR).
+ 
+They each have 3 past months of data (complete months), and one “month-in-progress”. Can you make it harvest, such that the month in progress gets stamped with the day-hour?
+ 
+

@@ -11,6 +11,8 @@ BOMT_NEXT=0
 BOMT_WAIT=1day
 DOT_NEXT=0
 DOT_WAIT=15mins
+DOTA_NEXT=0
+DOTA_WAIT=1hour
 WIR_NEXT=0
 WIR_WAIT=1hour
 NEONNEXT=0
@@ -81,6 +83,14 @@ while `true` ; do
     ./harvest_dot/DOT.sh --site "mozzie"
     DOT_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $DOT_WAIT"`
 #   echo next DOT at $DOT_NEXT
+    changed=1
+  fi
+
+  if [ $NOW -ge $DOTA_NEXT ] ; then
+    # echo run DOTAWS.sh
+    ./harvest_dot_aws/DOTAWS.sh
+    DOTA_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $DOTA_WAIT"`
+#   echo next DOT at $DOTA_NEXT
     changed=1
   fi
 

@@ -64,6 +64,9 @@ fi
     echo harvest_dot mozzie $BACKTIME
     ./harvest_dot/DOT.sh $BACKTIME --site mozzie
 
+    echo harvest_dot_aws $BACKTIME
+    ./harvest_dot_aws/DOTAWS.sh $BACKTIME
+
     echo harvest_neon $BACKTIME
     ./harvest_neon/NEON.sh $BACKTIME
 

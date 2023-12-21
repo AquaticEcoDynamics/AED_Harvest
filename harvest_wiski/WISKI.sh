@@ -52,14 +52,13 @@ done
 count=0
 for f in ${DATADIR}/* ; do
   if [ -f $f ] ; then
+    MYDATE=`echo $f | cut -f4 -d_ | tr -d '-'`
     if [ $count -eq 0 ] ; then
-    # echo "cat $f \> ${base_dir}wiski.csv"
-      cat $f > ${base_dir}wiski.csv
-    else
-    # echo "tail -n +2 $f \>\> ${base_dir}wiski.csv"
-      tail -n +2 $f >> ${base_dir}wiski.csv
-  fi
-  count=$((count+1))
+      HEAD=`head -1 ${f} | tr -d '\r'`
+      echo $HEAD,\"UploadDate\" > ${base_dir}wiski.csv
+    fi
+    tail -n +2 $f | tr -d '\r' | sed -e "s/$/,\"$MYDATE\"/" >> ${base_dir}wiski.csv
+    count=$((count+1))
   fi
 done
 
