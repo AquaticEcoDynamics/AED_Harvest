@@ -10,7 +10,7 @@ FILE=/tmp/tmpx_$$.json
 OUTFILE=""
 DATE=""
 TIME=""
-DATADIR="data/${YEAR}/harvest_dpird"
+DATADIR="data/${YEAR}/harvest_dpird/$SITENAME"
 mkdir -p $DATADIR >& /dev/null
 
 HOST="https://api.dpird.wa.gov.au/"
@@ -380,8 +380,14 @@ year=`echo $START | cut -f1 -d/`
 month=`echo $START | cut -f2 -d/`
 day=`echo $START | cut -f3 -d/`
 
-  OUTFILE="dpird_SP_daily_${year}${month}${day}.csv"
-  get_data SP $year $month $day
+if [ "$SITENAME" = "" ] ; then
+  STAT="SP"
+else
+  STAT="${SITENAME}"
+fi
+i
+  OUTFILE="dpird_${STAT}_daily_${year}${month}${day}.csv"
+  get_data ${STAT} $year $month $day
   if [ -f ${OUTFILE} ] ; then
      if [ -f ${DATADIR}/${year}${month}${day}.csv ] ; then
        diff -q ${OUTFILE} ${DATADIR}/${year}${month}${day}.csv >& /dev/null

@@ -50,6 +50,9 @@ fi
     echo harvest_bom river murray lock 6 $BACKTIME
     ./harvest_bom/BOM.sh $BACKTIME --site murray6
 
+#   echo harvest_bom jacup
+#   ./harvest_bom/BOM.sh $BACKTIME --site jacup
+
     echo harvest_bom_tide $BACKTIME
     ./harvest_bom_tide/BOM_tide.sh $BACKTIME
 
@@ -74,7 +77,14 @@ fi
     ./harvest_matilda/MATILDA.sh $BACKTIME
 
     echo harvest_dpird $BACKTIME
-    ./harvest_dpird/DPIRD.sh $BACKTIME
+#   ./harvest_dpird/DPIRD.sh $BACKTIME
+    ./harvest_dpird/DPIRD.sh $BACKTIME --site SP
+    ./harvest_dpird/DPIRD.sh $BACKTIME --site DP001
+    ./harvest_dpird/DPIRD.sh $BACKTIME --site QA001
+    ./harvest_dpird/DPIRD.sh $BACKTIME --site MS001
+    ./harvest_dpird/DPIRD.sh $BACKTIME --site GA001
+    ./harvest_dpird/DPIRD.sh $BACKTIME --site DK001
+
 
     echo harvest_lwn $BACKTIME
     ./harvest_lwn/LWN.sh $BACKTIME
