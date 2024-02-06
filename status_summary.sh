@@ -21,6 +21,11 @@ for i in *; do
 done
 
 echo '</TABLE>' >> ${OUTNAME}
+echo '<BR><BR>>' >> ${OUTNAME}
+
+echo '<PRE>' >> ${OUTNAME}
+cat /ARMS/Workspaces/scevo/scevo-arms/summary/scevo_arms_sensorsummary.log >> ${OUTNAME}
+echo '</PRE>' >> ${OUTNAME}
 
 cp ${OUTNAME} ${CWD}/../AED_Harvest.wiki
 cd ${CWD}/../AED_Harvest.wiki

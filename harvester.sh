@@ -116,7 +116,13 @@ while `true` ; do
   fi
 
   if [ $NOW -ge $DPIRDNEXT ] ; then
-    ./harvest_dpird/DPIRD.sh
+    ./harvest_dpird/DPIRD.sh --site SP
+    ./harvest_dpird/DPIRD.sh --site DP001
+    ./harvest_dpird/DPIRD.sh --site QA001
+    ./harvest_dpird/DPIRD.sh --site MS001
+    ./harvest_dpird/DPIRD.sh --site GA001
+    ./harvest_dpird/DPIRD.sh --site DK001
+
     DPIRDNEXT=`date +%Y%m%d%H%M --date="$TODAY + $DPIRDWAIT"`
 #   echo next DPIRD at $DPIRDNEXT
     changed=1

@@ -385,7 +385,7 @@ if [ "$SITENAME" = "" ] ; then
 else
   STAT="${SITENAME}"
 fi
-i
+
   OUTFILE="dpird_${STAT}_daily_${year}${month}${day}.csv"
   get_data ${STAT} $year $month $day
   if [ -f ${OUTFILE} ] ; then
