@@ -173,8 +173,8 @@ while `true` ; do
   fi
 
   if [ $NOW -ge $TO_S3_NEXT ] ; then
-    /usr/bin/rsync -avxz --exclude-from=/Data/AED_Harvest/excluded --delete /Data/AED_Harvest/data hydro@localhost:/buckets/harvest
-#   /usr/bin/rsync -avxz --exclude-from=/Data/AED_Harvest/excluded /Data/AED_Harvest/data hydro@localhost:/buckets/harvest
+    /usr/bin/rsync -avx --exclude-from=/Data/AED_Harvest/excluded --delete /Data/AED_Harvest/data hydro@localhost:/buckets/harvest
+#   /usr/bin/rsync -avx --exclude-from=/Data/AED_Harvest/excluded /Data/AED_Harvest/data hydro@localhost:/buckets/harvest
     TO_S3_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $TO_S3_WAIT"`
   fi
 
