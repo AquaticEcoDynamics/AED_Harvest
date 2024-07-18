@@ -3,7 +3,7 @@
 DEBUG=0
 
 # cd /ARMS/Workspaces/scevo/scevo/data/utils/web
-cd /Data/AED_Harvest
+#cd /Data/AED_Harvest
 
 BOM_NEXT=0
 BOM_WAIT=30mins
