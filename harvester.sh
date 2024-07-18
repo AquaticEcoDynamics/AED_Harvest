@@ -42,13 +42,7 @@ TO_S3_WAIT=1day
 #
 TOM=`date --date="+1day" +%Y%m%d`
 
-while `true` ; do
-  TODAY=`date`
-  NOW=`date +%Y%m%d%H%M`
-  TOD=`date +%Y%m%d`
-  changed=0
-
-  if [ $NOW -ge $BOM_NEXT ] ; then
+run_bom_set () {
     # echo run BOM.sh
     ./harvest_bom/BOM.sh --site "barrack"
     sleep 1
@@ -61,12 +55,24 @@ while `true` ; do
     ./harvest_bom/BOM.sh --site murray1
     sleep 1
     ./harvest_bom/BOM.sh --site murray6
+}
+
+
+while `true` ; do
+  TODAY=`date`
+  NOW=`date +%Y%m%d%H%M`
+  TOD=`date +%Y%m%d`
+  changed=0
+
+  if [ $NOW -ge $BOM_NEXT ] ; then
+    run_bom_set &
 
     BOM_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $BOM_WAIT"`
 #   echo next BOM at $BOM_NEXT
     changed=1
   fi
 
+if [ "1" = "2" ] ; then
   if [ $NOW -ge $BOMT_NEXT ] ; then
     ./harvest_bom_tide/BOM_tide.sh
     BOMT_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $BOMT_WAIT"`
@@ -166,17 +172,17 @@ while `true` ; do
 #   echo next DEW at $DEW_NEXT
     changed=1
   fi
+fi
 
   if [ $changed -ne 0 ] ; then
     # if something may have changed we update the status summary
     ./status_summary.sh > data/log/status_updater.log 2>&1
   fi
 
-  if [ $NOW -ge $TO_S3_NEXT ] ; then
-    /usr/bin/rsync -avx --exclude-from=/Data/AED_Harvest/excluded --delete /Data/AED_Harvest/data hydro@localhost:/buckets/harvest
-#   /usr/bin/rsync -avx --exclude-from=/Data/AED_Harvest/excluded /Data/AED_Harvest/data hydro@localhost:/buckets/harvest
-    TO_S3_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $TO_S3_WAIT"`
-  fi
+# if [ $NOW -ge $TO_S3_NEXT ] ; then
+#   /usr/bin/rsync -avx --exclude-from=/Data/AED_Harvest/excluded --delete /Data/AED_Harvest/data hydro@localhost:/buckets/harvest
+#   TO_S3_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $TO_S3_WAIT"`
+# fi
 
   # sleep for a random time between 1 and 3 mins
   sleep $((60 + $RANDOM % 120))
