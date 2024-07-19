@@ -156,9 +156,15 @@ while [ $I -lt $COUNTS ] ; do
   ARCHIVEF="${DATADIR}/${TODAY}.csv"
   list=`/bin/ls ${DATADIR}/${TODAY}*.csv 2> /dev/null`
   if [ "$list" != "" ] ; then
+    maxn=`echo $list | wc -l`
+    count=0
     for fl in $list ; do
-      /bin/rm $fl
-      export ARCHIVEF="$fl"
+      count=$((count+1))
+      if [ $count -lt $maxn ] ; then
+        /bin/rm $fl
+      else
+        export ARCHIVEF="$fl"
+      fi
     done
   fi
 
