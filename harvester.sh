@@ -90,7 +90,7 @@ while `true` ; do
     # echo run DOTAWS.sh
     ./harvest_dot_aws/DOTAWS.sh
     DOTA_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $DOTA_WAIT"`
-#   echo next DOT at $DOTA_NEXT
+#   echo next DOTAWS at $DOTA_NEXT
     changed=1
   fi
 
@@ -173,7 +173,7 @@ while `true` ; do
   fi
 
   if [ $NOW -ge $TO_S3_NEXT ] ; then
-    /usr/bin/rsync -avx --exclude-from=/Data/AED_Harvest/excluded --delete /Data/AED_Harvest/data hydro@localhost:/buckets/harvest
+    /usr/bin/rsync -avx --exclude-from=/Data/AED_Harvest/excluded --delete /Data/AED_Harvest/data hydro@localhost:/buckets/harvest &
 #   /usr/bin/rsync -avx --exclude-from=/Data/AED_Harvest/excluded /Data/AED_Harvest/data hydro@localhost:/buckets/harvest
     TO_S3_NEXT=`date +%Y%m%d%H%M --date="$TODAY + $TO_S3_WAIT"`
   fi

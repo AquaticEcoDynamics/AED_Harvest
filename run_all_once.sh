@@ -30,6 +30,8 @@ if [ "$TODAY" != "" ] ; then
   BACKTIME="--today $TODAY"
 fi
 
+   ./backup_cwss_ftp.sh > /dev/null 2>&1
+
 #echo BACKTIME is \"$BACKTIME\"
 
     echo harvest_bom barrack $BACKTIME

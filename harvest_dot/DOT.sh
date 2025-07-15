@@ -104,7 +104,7 @@ fi
 # So, the new way gets the line numbers on which "Recorded Tide" appears, the line after which has the tide data
 TLNX=`grep -n 'Recorded Tide:' $FILE | cut -f1 -d\: | tr '\n' '\|'`
 
-UPDATED=`tr -d '\r' < $FILE | sed -e '/./{H;$!d;}' -e 'x;/Recorded Tide:/!d' | grep Updated | cut -f2 -d\> | cut -f1 -d\< | cut -f2- -d\  | tr '\n' '\|'`
+UPDATED=`tr -d '\r' < $FILE | sed -e '/./{H;$!d;}' -e 'x;/Recorded Tide:/!d' | grep Updated | cut -f3 -d\> | cut -f1 -d\< | cut -f2- -d\  | tr '\n' '\|'`
 RESIDUAL=`tr -d '\r' < $FILE | sed -e '/./{H;$!d;}' -e 'x;/Recorded Tide:/!d' | grep Residual: | cut -f5 -d\> | cut -f1 -d\< | tr '\n' '\|'`
 PREDICTED=`tr -d '\r' < $FILE | sed -e '/./{H;$!d;}' -e 'x;/Recorded Tide:/!d' | grep Predicted: | cut -f5 -d\> | cut -f1 -d\< | tr '\n' '\|'`
 
@@ -117,7 +117,7 @@ COUNTS=`tr -d '\r' < $FILE | sed -e '/./{H;$!d;}' -e 'x;/Recorded Tide:/!d' | gr
 # echo Counted is $COUNTS
 
 # echo Updated is \"$UPDATED\"
-# # echo Tide is \"$TIDED\"
+# echo Tide is \"$TIDED\"
 # echo lines for tides \"$TLNX\"
 # echo Residual is \"$RESIDUAL\"
 # echo Predicted is \"$PREDICTED\"
