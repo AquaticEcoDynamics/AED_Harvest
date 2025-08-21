@@ -25,12 +25,38 @@ TMPLST=${TMPPRE}Lst
 
 #==============================================================================#
 
+fetch_dir_data() {
+  DNAM=$1
+  DTLST=${TMPLST}_${DNAM}
+  echo curl --user ${USERNAME}:${PASSWORD} --list-only "${URL}/${DNAM}/" -s -o $DTLST
+  curl --user ${USERNAME}:${PASSWORD} --list-only "${URL}/${DNAM}/" -s -o $DTLST
+
+  cat $DTLST | while read LINE ; do
+    FF2=`echo $LINE | tr -d '\r'`
+    echo $FF2 | grep '.csv$' > /dev/null 2>&1
+    if [ $? -eq 0 ] ; then
+      DFLN=`echo ${FF2} | cut -f-4 -d_`
+      DFLN="${DFLN}.csv"
+      DATED=`echo ${FF2} | cut -f4 -d_ | tr -d '-'`
+      if [ $DATED -ge 20230907 ] ; then
+        if [ -f ${DATADIR}/${DFLN} ] ; then
+          echo Already got $FF2
+        else
+          echo Fetching $DNAM/$FF2 into ${DATADIR}/${DFLN}
+          curl --user ${USERNAME}:${PASSWORD} "${URL}/${DNAM}/${FF2}" -s -o ${DATADIR}/${DFLN}
+        fi
+      fi
+    fi
+  done
+}
+
 #------------------------------------------------------------------------------#
 curl --user ${USERNAME}:${PASSWORD} --list-only "${URL}/" -s -o $TMPLST
 
+
 mkdir -p ${DATADIR} > /dev/null 2>&1
 
-cat  $TMPLST | while read LINE ; do
+cat $TMPLST | while read LINE ; do
     FILE=`echo $LINE | tr -d '\r'`
     echo $FILE | grep '.csv$' > /dev/null 2>&1
     if [ $? -eq 0 ] ; then
@@ -45,6 +71,9 @@ cat  $TMPLST | while read LINE ; do
           curl --user ${USERNAME}:${PASSWORD} "${URL}/${FILE}" -s -o ${DATADIR}/${DFLN}
         fi
       fi
+    else
+      echo not csv $FILE
+      fetch_dir_data $FILE
     fi
 done
 
